@@ -121,13 +121,9 @@ public:
     void postAppSpecialize(const AppSpecializeArgs *args) override {
         if (do_hook) {
             //hook dlopen
-            api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
+            // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
             //hook android_dlopen_ext
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
-            api->pltHookCommit();
-
-            api->pltHookExclude(".*", "dlopen");
-            api->pltHookExclude(".*", "android_dlopen_ext");
             api->pltHookCommit();
         }
     }
