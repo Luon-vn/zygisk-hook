@@ -44,7 +44,7 @@ android {
     // */
 }
 repositories {
-    mavenCentral()
+    MavenRepo()
 }
 dependencies {
 	implementation "org.lsposed.libcxx:cxx:27.0.12077973"
