@@ -31,6 +31,12 @@ jobs:
         find ./module/build -type f
         zip -r outputs.zip ./module/build/outputs
 
+        unzip ./module/build/outputs/aar/module-debug.aar -d ./out
+        mkdir module-zip/zygisk
+        find ./out -type f -iname '*.so' -exec sh -c 'cp "{}" "module-zip/zygisk/$(echo {} | awk -F"/" "{ print \$4 }").so"' \;
+        cd module-zip
+        zip -r ../install-module.zip .
+
     # Create release
     - name: Generate release tag
       id: tag
@@ -44,6 +50,7 @@ jobs:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         files: |
           ./outputs.zip
+          ./install-module.zip
     # Done release
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages

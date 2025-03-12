@@ -18,8 +18,9 @@ using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 using zygisk::ServerSpecializeArgs;
 
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "ZygiskHook", __VA_ARGS__)
 #define LOG_TAG "ZygiskHook"
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 // ==== Hook ====
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
@@ -27,13 +28,13 @@ void *(*orig__dlopen)(const char *filename, int flags);
 
 void *my_dlopen(const char *filename, int flags)
 {
-    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "dlopen: %s", filename);
+    LOGE("dlopen: %s", filename);
     return orig__dlopen(filename, flags);
 }
 
 void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info)
 {
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "android_dlopen_ext: %s flags: %08x", __filename, __flags);
+    LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
 
     return orig_android_dlopen_ext(__filename, __flags, __info);
 }
@@ -120,9 +121,14 @@ private:
         send_string(fd, package_name);
         send_string(fd, app_data_dir);
 
+        std::string buf = read_string(fd);
+        if (strcmp(buf, "0") == 0) {
+            // Since we do not hook any functions, we should let Zygisk dlclose ourselves
+            api->setOption(zygisk::Option::DLCLOSE_MODULE_LIBRARY);
+            return;
+        }
+
         do_hook = true;
-        // Since we do not hook any functions, we should let Zygisk dlclose ourselves
-        // api->setOption(zygisk::Option::DLCLOSE_MODULE_LIBRARY);
     }
 
 };
@@ -130,9 +136,18 @@ private:
 // 
 static void companion_handler(int fd) {
     std::string package_name = read_string(fd);
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "companion: package %s", package_name.c_str());
+    LOGE("companion: package %s", package_name.c_str());
     std::string app_data_dir = read_string(fd);
-    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "companion: datadir %s", app_data_dir.c_str());
+    LOGE("companion: datadir %s", app_data_dir.c_str());
+
+    istd::string hook = readFirstLine("/data/local/tmp/zygisk.hook/" + package_name + ".txt");
+    if (hash.empty()) {
+        LOGE("companion: dont hook", package_name.c_str());
+        send_string(fd, "0");
+        return;
+    }
+    LOGE("companion: do hook", package_name.c_str());
+    send_string(fd, "1");
 }
 
 // Register our module class and the companion handler function
