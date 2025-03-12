@@ -5,8 +5,8 @@ project(zygiskhook)
 # include_directories(${CMAKE_SOURCE_DIR}/libcxx/include)
 # link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
-find_package(libcxx REQUIRED CONFIG)
-link_libraries(libcxx)
+find_package(cxx REQUIRED CONFIG)
+link_libraries(cxx::cxx)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${CMAKE_SOURCE_DIR}/main.cpp)
 

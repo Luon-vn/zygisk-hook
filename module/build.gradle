@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.library'
-    alias 'libs.plugins.android.application'
+    alias 'libs.plugins.android.library'
 }
 
 android {
@@ -57,5 +57,6 @@ android {
 }
 
 dependencies {
-	implementation "org.lsposed.libcxx:libcxx:27.0.12077973"
+	// implementation "org.lsposed.libcxx:libcxx:27.0.12077973"
+    implementation libs.cxx
 }
