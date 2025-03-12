@@ -3,6 +3,10 @@ plugins {
 }
 
 android {
+    buildFeatures {
+        prefab true
+    }
+    
     namespace 'zygisk.hook'
     compileSdkVersion 35
     buildToolsVersion '35.0.1'
