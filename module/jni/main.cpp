@@ -199,8 +199,9 @@ public:
     }
 
     void postAppSpecialize(const AppSpecializeArgs *args) override {
+        LOGE("module: postAppSpecialize");
         if (do_hook) {
-            LOGE("start hooking");
+            LOGE("module: start hooking");
             //hook dlopen
             // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
             // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
@@ -233,13 +234,17 @@ private:
         send_string(fd, package_name);
         send_string(fd, app_data_dir);
 
+        LOGE("module: readstring")
         std::string buf = read_string(fd);
+
+        LOGE("module: receive %s", buf.c_str());
         if (buf == "0") {
             // Since we do not hook any functions, we should let Zygisk dlclose ourselves
             api->setOption(zygisk::Option::DLCLOSE_MODULE_LIBRARY);
             return;
         }
 
+        LOGE("module: do hook")
         do_hook = true;
     }
 
@@ -248,9 +253,9 @@ private:
 // 
 static void companion_handler(int fd) {
     std::string package_name = read_string(fd);
-    LOGE("companion: package %s", package_name.c_str());
+    // LOGE("companion: package %s", package_name.c_str());
     std::string app_data_dir = read_string(fd);
-    LOGE("companion: datadir %s", app_data_dir.c_str());
+    // LOGE("companion: datadir %s", app_data_dir.c_str());
 
     std::string config_file = "/data/local/tmp/zygisk.hook/" + package_name + ".txt";
 
@@ -263,7 +268,7 @@ static void companion_handler(int fd) {
         }
     }
 
-    LOGE("companion: dont hook %s", package_name.c_str());
+    // LOGE("companion: dont hook %s", package_name.c_str());
     send_string(fd, "0");
 }
 
