@@ -30,7 +30,7 @@ jobs:
     - name: Grant execute permission for gradlew & Build with Gradle
       run: |
         chmod +x gradlew
-        ./gradlew :module:assembleRelease
+        ./gradlew moduleZipRelease moduleZipDebug
         zip -r outputs.zip ./out
 
     # Create release
