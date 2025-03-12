@@ -8,7 +8,7 @@ android {
     }
     prefab {
         packages {
-            libcxx {
+            create("libcxx") {
                 artifact "org.lsposed.libcxx:libcxx:27.0.12077973"
             }
         }
