@@ -140,14 +140,19 @@ static void companion_handler(int fd) {
     std::string app_data_dir = read_string(fd);
     LOGE("companion: datadir %s", app_data_dir.c_str());
 
-    std::string hook = readFirstLine("/data/local/tmp/zygisk.hook/" + package_name + ".txt");
-    if (hook.empty()) {
-        LOGE("companion: dont hook %s", package_name.c_str());
-        send_string(fd, "0");
-        return;
+    std::string config_file = "/data/local/tmp/zygisk.hook/" + package_name + ".txt"
+
+    if (std::filesystem::exists(config_file)) {
+        std::string hook = readFirstLine(config_file);
+        if (!hook.empty()) {
+            LOGE("companion: do hook %s", package_name.c_str());
+            send_string(fd, "1");
+            return;
+        }
     }
-    LOGE("companion: do hook %s", package_name.c_str());
-    send_string(fd, "1");
+
+    LOGE("companion: dont hook %s", package_name.c_str());
+    send_string(fd, "0");
 }
 
 // Register our module class and the companion handler function
