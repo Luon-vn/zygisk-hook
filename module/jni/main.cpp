@@ -200,6 +200,7 @@ public:
 
     void postAppSpecialize(const AppSpecializeArgs *args) override {
         if (do_hook) {
+            LOGE("start hooking");
             //hook dlopen
             // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
             // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
@@ -207,13 +208,14 @@ public:
             // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             // api->pltHookCommit();
 
-            int ret;
-            pthread_t ntid;
-            if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
-                LOGE("can't create thread: %s\n", strerror(ret));
-            }
+            // int ret;
+            // pthread_t ntid;
+            // if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
+            //     LOGE("can't create thread: %s\n", strerror(ret));
+            // }
 
-            LOGE("thread created: %d", ntid);
+            // LOGE("thread created: %d", ntid);
+
         }
     }
 
