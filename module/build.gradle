@@ -57,6 +57,6 @@ android {
 }
 
 dependencies {
-	implementation "org.lsposed.libcxx:cxx:27.0.12077973"
-    // implementation libs.cxx
+    // gradle/libs.versions.toml
+    implementation libs.cxx
 }
