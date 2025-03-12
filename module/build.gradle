@@ -4,7 +4,17 @@ plugins {
 
 android {
     buildFeatures {
+        // require to preload dependencies
         prefab true
+    }
+
+    packaging {
+        jniLibs {
+            excludes += "**/libdobby.so"
+        }
+        resources {
+            excludes += "**"
+        }
     }
 
     namespace 'zygisk.hook'

@@ -12,6 +12,7 @@ link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 # libcxx source
 
+# https://github.com/liyafe1997/PlayIntegrityFix
 # Dobby source
 # git submodule add -- https://github.com/jmpews/Dobby.git ./module/jni/Dobby
 add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
