@@ -234,7 +234,7 @@ private:
         send_string(fd, package_name);
         send_string(fd, app_data_dir);
 
-        LOGE("module: readstring")
+        LOGE("module: readstring");
         std::string buf = read_string(fd);
 
         LOGE("module: receive %s", buf.c_str());
@@ -244,7 +244,7 @@ private:
             return;
         }
 
-        LOGE("module: do hook")
+        LOGE("module: do hook");
         do_hook = true;
     }
 
