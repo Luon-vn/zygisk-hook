@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 34
     // ndkVersion '25.2.9519653'
 
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 32
+        minSdkVersion 25
+        targetSdkVersion 34
     }
 
     externalNativeBuild {
