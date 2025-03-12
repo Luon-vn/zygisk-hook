@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sys/mman.h>
 #include <cstdlib>
+#include <pthread.h>
 
 // #include "zygisk.hpp"
 
@@ -36,12 +37,45 @@ void *my_dlsym(void *handle, const char *name) {
     return orig__dlsym(handle, name);
 }
 
+
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
 void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
     LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
 
-    return orig_android_dlopen_ext(__filename, __flags, __info);
+    void* handle = orig_android_dlopen_ext(__filename, __flags, __info);
+    /*
+    if(!libso_handle){
+        if(strstr(__filename, "libdexprotector.so")){
+            libso_handle = handle;
+            LOGE("got libdexprotector handle at %lx", (long)libso_handle);
+        }
+    }
+    // */
+
+    return handle;
 }
+
+/*
+static unsigned long base_addr = 0;
+void *hack_thread(void *arg) {
+    LOGE("hack thread: %d", gettid());
+    srand(time(nullptr));
+
+    while (true)
+    {
+        base_addr = get_module_base("libdexprotector.so");
+        if (base_addr != 0 && il2cpp_handle != nullptr) {
+            break;
+        }
+    }
+    LOGE("detect libdexprotector.so %lx, start sleep", base_addr);
+
+    while (true)
+    {
+        sleep(2);
+    }
+}
+// */
 
 // Utils
 
@@ -88,6 +122,52 @@ static std::string read_string(int fd)
     return buf;
 }
 
+/*
+unsigned long get_module_base(const char* module_name)
+{
+    FILE *fp;
+    unsigned long addr = 0;
+    char *pch;
+    char filename[32];
+    char line[1024];
+
+    snprintf(filename, sizeof(filename), "/proc/self/maps");
+
+    fp = fopen(filename, "r");
+
+    if (fp != nullptr) {
+        while (fgets(line, sizeof(line), fp)) {
+            if (strstr(line, module_name) && strstr(line, "r-xp")) {
+                pch = strtok(line, "-");
+                addr = strtoul(pch, nullptr, 16);
+                if (addr == 0x8000)
+                    addr = 0;
+                break;
+            }
+        }
+        fclose(fp);
+    }
+    return addr;
+}
+
+void hook_each(unsigned long rel_addr, void* hook, void** backup_){
+    LOGE("installing hook at %lx", rel_addr);
+    unsigned long addr = rel_addr;
+
+    void* page_start = (void*)(addr - addr % PAGE_SIZE);
+    if (-1 == mprotect(page_start, PAGE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC)) {
+        LOGE("mprotect failed(%d)", errno);
+        return ;
+    }
+
+    DobbyHook(
+            reinterpret_cast<void*>(addr),
+            hook,
+            backup_);
+    mprotect(page_start, PAGE_SIZE, PROT_READ | PROT_EXEC);
+}
+// */
+
 // Module
 class ZygiskHook : public zygisk::ModuleBase {
 public:
@@ -126,10 +206,16 @@ public:
         if (do_hook) {
             //hook dlopen
             // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
-            api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
+            // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
             //hook android_dlopen_ext
             // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             api->pltHookCommit();
+
+            // int ret;
+            // pthread_t ntid;
+            // if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
+            //     LOGE("can't create thread: %s\n", strerror(ret));
+            // }
         }
     }
 
