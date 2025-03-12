@@ -1,17 +1,19 @@
-cmake_minimum_required(VERSION 3.20.0)
+cmake_minimum_required(VERSION 3.22.1)
 
-project("zygiskhook")
+project(zygiskhook)
 
-add_subdirectory(libcxx)
+# include_directories(${CMAKE_SOURCE_DIR}/libcxx/include)
+# link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
-add_library(${CMAKE_PROJECT_NAME} SHARED main.cpp)
+link_libraries(cxx::cxx)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE log libcxx)
+add_library(${CMAKE_PROJECT_NAME} SHARED ${CMAKE_SOURCE_DIR}/main.cpp)
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
-    -std=c++17
-    -fno-exceptions
-    -fno-rtti
-    -fvisibility=hidden
-    -fvisibility-inlines-hidden
-)
+add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
+
+SET_OPTION(Plugin.Android.BionicLinkerUtil ON)
+
+target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE c_std_23 cxx_std_23)
+
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE log dobby_static)
+
