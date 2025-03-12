@@ -12,6 +12,7 @@
 #include <sys/mman.h>
 #include <cstdlib>
 #include <pthread.h>
+#include <cstring>
 #include "dobby.h"
 
 // #include "zygisk.hpp"
@@ -99,6 +100,7 @@ unsigned long get_module_base(const char* module_name)
 void hook_each(unsigned long rel_addr, void* hook, void** backup_){
     LOGE("installing hook at %lx", rel_addr);
     unsigned long addr = rel_addr;
+    auto PAGE_SIZE = getpagesize();
 
     void* page_start = (void*)(addr - addr % PAGE_SIZE);
     if (-1 == mprotect(page_start, PAGE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC)) {
