@@ -108,10 +108,7 @@ void hook_each(unsigned long rel_addr, void* hook, void** backup_){
         return ;
     }
 
-    DobbyHook(
-            reinterpret_cast<void*>(addr),
-            hook,
-            backup_);
+    DobbyHook(reinterpret_cast<void*>(addr), hook, backup_);
     mprotect(page_start, page_size, PROT_READ | PROT_EXEC);
 }
 
@@ -153,8 +150,7 @@ void *hack_thread(void *arg) {
     LOGE("hack thread: %d", gettid());
     srand(time(nullptr));
 
-    while (true)
-    {
+    while (true) {
         base_addr = get_module_base("libdexprotector.so");
         if (base_addr != 0 && libso_handle != nullptr) {
             break;
@@ -162,8 +158,7 @@ void *hack_thread(void *arg) {
     }
     LOGE("detect libdexprotector.so %lx, start sleep", base_addr);
 
-    while (true)
-    {
+    while (true) {
         sleep(2);
     }
 }
@@ -210,13 +205,15 @@ public:
             // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
             //hook android_dlopen_ext
             // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
-            api->pltHookCommit();
+            // api->pltHookCommit();
 
             int ret;
             pthread_t ntid;
             if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
                 LOGE("can't create thread: %s\n", strerror(ret));
             }
+
+            LOGE("thread created: %d", ntid);
         }
     }
 
