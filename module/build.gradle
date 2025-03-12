@@ -56,6 +56,6 @@ android {
 }
 
 dependencies {
-	// implementation "org.lsposed.libcxx:libcxx:27.0.12077973"
-    implementation libs.cxx
+	implementation "org.lsposed.libcxx:cxx:27.0.12077973"
+    // implementation libs.cxx
 }
