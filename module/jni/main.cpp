@@ -1,6 +1,6 @@
 #include <jni.h>
 #include <string>
-// #include "zygisk.h"
+#include "zygisk.h"
 #include <android/log.h>
 #include <dlfcn.h>
 #include <android/dlext.h>
@@ -12,13 +12,14 @@
 #include <sys/mman.h>
 #include <cstdlib>
 
-#include "zygisk.hpp"
+// #include "zygisk.hpp"
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 using zygisk::ServerSpecializeArgs;
 
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "ZygiskHook", __VA_ARGS__)
+#define LOG_TAG "ZygiskHook"
 
 // ==== Hook ====
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
@@ -111,7 +112,7 @@ private:
 };
 
 // 
-static void companion_handler(int i) {
+static void companion_handler(int fd) {
     std::string package_name = read_string(fd);
     __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, "companion: package %s", package_name.c_str());
     std::string app_data_dir = read_string(fd);
