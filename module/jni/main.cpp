@@ -26,7 +26,7 @@ using zygisk::ServerSpecializeArgs;
 
 void *(*orig__dlopen)(const char *filename, int flags);
 void *my_dlopen(const char *filename, int flags) {
-    LOGE("dlopen: %s", filename);
+    LOGE("dlopen: %s flags: %08x", filename, flags);
     return orig__dlopen(filename, flags);
 }
 
@@ -125,7 +125,7 @@ public:
     void postAppSpecialize(const AppSpecializeArgs *args) override {
         if (do_hook) {
             //hook dlopen
-            api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
+            // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
             api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
             //hook android_dlopen_ext
             // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
