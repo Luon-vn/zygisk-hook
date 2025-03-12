@@ -10,6 +10,7 @@ link_libraries(cxx::cxx)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${CMAKE_SOURCE_DIR}/main.cpp)
 
+# git submodule add -- https://github.com/jmpews/Dobby.git ./module/jni/Dobby
 add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
 
 SET_OPTION(Plugin.Android.BionicLinkerUtil ON)
@@ -17,4 +18,3 @@ SET_OPTION(Plugin.Android.BionicLinkerUtil ON)
 # target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE c_std_23 cxx_std_23)
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE log dobby_static)
-

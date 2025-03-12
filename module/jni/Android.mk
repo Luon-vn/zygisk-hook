@@ -7,6 +7,7 @@ LOCAL_STATIC_LIBRARIES := libcxx
 LOCAL_LDLIBS := -llog
 include $(BUILD_SHARED_LIBRARY)
 
+# git submodule add -- https://github.com/topjohnwu/libcxx.git ./module/jni/libcxx
 include jni/libcxx/Android.mk
 
 # If you do not want to use libc++, link to system stdc++

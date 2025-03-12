@@ -1,9 +1,5 @@
 [versions]
-agp = "8.8.2"
 cxx = "27.0.12077973"
 
 [libraries]
 cxx = { group = "org.lsposed.libcxx", name = "libcxx", version.ref = "cxx" }
-
-[plugins]
-android-application = { id = "com.android.library", version.ref = "agp" }
