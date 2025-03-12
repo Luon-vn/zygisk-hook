@@ -1,0 +1,49 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew & Build with Gradle
+      run: |
+        chmod +x gradlew
+        ./gradlew build
+        ./gradlew :app:assembleRelease
+        zip -r outputs.zip ./app/build/outputs ./out
+
+    # Create release
+    - name: Generate release tag
+      id: tag
+      run: |
+        sudo timedatectl set-timezone Asia/Ho_Chi_Minh
+        sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+        echo "release_tag=ActionBuild_$(date +"%Y.%m.%d_%H-%M-%S")" >> $GITHUB_OUTPUT
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        files: |
+          ./outputs.zip
+    # Done release
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
