@@ -125,6 +125,10 @@ public:
             //hook android_dlopen_ext
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             api->pltHookCommit();
+
+            api->pltHookExclude(".*", "dlopen");
+            api->pltHookExclude(".*", "android_dlopen_ext");
+            api->pltHookCommit();
         }
     }
 
