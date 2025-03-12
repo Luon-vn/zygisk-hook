@@ -20,7 +20,7 @@ android {
         targetSdkVersion 35
     }
 
-    /*
+    // /*
     externalNativeBuild {
         cmake {
             path = file("jni/CMakeLists.txt")
@@ -28,7 +28,7 @@ android {
     }
     // */
 
-    /*
+    // /*
     externalNativeBuild {
         cmake {
             abiFilters(
@@ -58,10 +58,12 @@ android {
     }
     // */
 
+    /* Android.mk
     externalNativeBuild {
         ndkBuild {
             path("jni/Android.mk")
         }
         
     }
+    // */
 }
