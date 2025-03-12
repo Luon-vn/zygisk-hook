@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <fstream>
 #include <sys/mman.h>
+#include <cstdlib>
 
 #include "zygisk.hpp"
 
