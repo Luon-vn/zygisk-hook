@@ -1,17 +1,11 @@
 plugins {
     id 'com.android.library'
+    alias 'libs.plugins.android.application'
 }
 
 android {
     buildFeatures {
         prefab true
-    }
-    prefab {
-        packages {
-            create("libcxx") {
-                artifact "org.lsposed.libcxx:libcxx:27.0.12077973"
-            }
-        }
     }
 
     namespace 'zygisk.hook'
