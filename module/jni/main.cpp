@@ -140,7 +140,7 @@ static void companion_handler(int fd) {
     std::string app_data_dir = read_string(fd);
     LOGE("companion: datadir %s", app_data_dir.c_str());
 
-    std::string config_file = "/data/local/tmp/zygisk.hook/" + package_name + ".txt"
+    std::string config_file = "/data/local/tmp/zygisk.hook/" + package_name + ".txt";
 
     if (std::filesystem::exists(config_file)) {
         std::string hook = readFirstLine(config_file.c_str());
