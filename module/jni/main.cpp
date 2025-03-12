@@ -122,7 +122,7 @@ private:
         send_string(fd, app_data_dir);
 
         std::string buf = read_string(fd);
-        if (strcmp(buf, "0") == 0) {
+        if (buf == "0") {
             // Since we do not hook any functions, we should let Zygisk dlclose ourselves
             api->setOption(zygisk::Option::DLCLOSE_MODULE_LIBRARY);
             return;
@@ -140,13 +140,13 @@ static void companion_handler(int fd) {
     std::string app_data_dir = read_string(fd);
     LOGE("companion: datadir %s", app_data_dir.c_str());
 
-    istd::string hook = readFirstLine("/data/local/tmp/zygisk.hook/" + package_name + ".txt");
-    if (hash.empty()) {
-        LOGE("companion: dont hook", package_name.c_str());
+    std::string hook = readFirstLine("/data/local/tmp/zygisk.hook/" + package_name + ".txt");
+    if (hook.empty()) {
+        LOGE("companion: dont hook %s", package_name.c_str());
         send_string(fd, "0");
         return;
     }
-    LOGE("companion: do hook", package_name.c_str());
+    LOGE("companion: do hook %s", package_name.c_str());
     send_string(fd, "1");
 }
 
