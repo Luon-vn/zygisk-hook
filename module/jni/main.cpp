@@ -24,61 +24,6 @@ using zygisk::ServerSpecializeArgs;
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-// ==== Hook ====
-
-void *(*orig__dlopen)(const char *filename, int flags);
-void *my_dlopen(const char *filename, int flags) {
-    LOGE("dlopen: %s flags: %08x", filename, flags);
-    return orig__dlopen(filename, flags);
-}
-
-void *(*orig__dlsym)(void *handle, const char *name);
-void *my_dlsym(void *handle, const char *name) {
-    LOGE("dlsym: %s", name);
-    return orig__dlsym(handle, name);
-}
-
-
-static void* libso_handle = nullptr;
-void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
-void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
-    LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
-
-    void* handle = orig_android_dlopen_ext(__filename, __flags, __info);
-    // /*
-    if(!libso_handle){
-        if(strstr(__filename, "libdexprotector.so")){
-            libso_handle = handle;
-            LOGE("got libdexprotector handle at %lx", (long)libso_handle);
-        }
-    }
-    // */
-
-    return handle;
-}
-
-// /*
-static unsigned long base_addr = 0;
-void *hack_thread(void *arg) {
-    LOGE("hack thread: %d", gettid());
-    srand(time(nullptr));
-
-    while (true)
-    {
-        base_addr = get_module_base("libdexprotector.so");
-        if (base_addr != 0 && libso_handle != nullptr) {
-            break;
-        }
-    }
-    LOGE("detect libdexprotector.so %lx, start sleep", base_addr);
-
-    while (true)
-    {
-        sleep(2);
-    }
-}
-// */
-
 // Utils
 
 static std::string readFirstLine(const char *filename) {
@@ -124,7 +69,6 @@ static std::string read_string(int fd)
     return buf;
 }
 
-// /*
 unsigned long get_module_base(const char* module_name)
 {
     FILE *fp;
@@ -167,6 +111,59 @@ void hook_each(unsigned long rel_addr, void* hook, void** backup_){
             hook,
             backup_);
     mprotect(page_start, PAGE_SIZE, PROT_READ | PROT_EXEC);
+}
+
+// ==== Hook ====
+
+void *(*orig__dlopen)(const char *filename, int flags);
+void *my_dlopen(const char *filename, int flags) {
+    LOGE("dlopen: %s flags: %08x", filename, flags);
+    return orig__dlopen(filename, flags);
+}
+
+void *(*orig__dlsym)(void *handle, const char *name);
+void *my_dlsym(void *handle, const char *name) {
+    LOGE("dlsym: %s", name);
+    return orig__dlsym(handle, name);
+}
+
+static void* libso_handle = nullptr;
+void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
+void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
+    LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
+
+    void* handle = orig_android_dlopen_ext(__filename, __flags, __info);
+    // /*
+    if(!libso_handle){
+        if(strstr(__filename, "libdexprotector.so")){
+            libso_handle = handle;
+            LOGE("got libdexprotector handle at %lx", (long)libso_handle);
+        }
+    }
+    // */
+
+    return handle;
+}
+
+// /*
+static unsigned long base_addr = 0;
+void *hack_thread(void *arg) {
+    LOGE("hack thread: %d", gettid());
+    srand(time(nullptr));
+
+    while (true)
+    {
+        base_addr = get_module_base("libdexprotector.so");
+        if (base_addr != 0 && libso_handle != nullptr) {
+            break;
+        }
+    }
+    LOGE("detect libdexprotector.so %lx, start sleep", base_addr);
+
+    while (true)
+    {
+        sleep(2);
+    }
 }
 // */
 
