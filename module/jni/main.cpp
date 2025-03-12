@@ -94,11 +94,28 @@ public:
     }
 
     void preAppSpecialize(AppSpecializeArgs *args) override {
-        auto package_name = env->GetStringUTFChars(args->nice_name, nullptr);
+        if (!args) {
+            api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
+            return;
+        }
+
         auto app_data_dir = env->GetStringUTFChars(args->app_data_dir, nullptr);
+        if (!app_data_dir) {
+            api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
+            return;
+        }
+
+        auto package_name = env->GetStringUTFChars(args->nice_name, nullptr);
+        if (!package_name) {
+            env->ReleaseStringUTFChars(args->app_data_dir, app_data_dir);
+            api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
+            return;
+        }
+
         preSpecialize(package_name, app_data_dir);
-        env->ReleaseStringUTFChars(args->nice_name, package_name);
+
         env->ReleaseStringUTFChars(args->app_data_dir, app_data_dir);
+        env->ReleaseStringUTFChars(args->nice_name, package_name);
     }
 
     void postAppSpecialize(const AppSpecializeArgs *args) override {
@@ -109,6 +126,10 @@ public:
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             api->pltHookCommit();
         }
+    }
+
+    void preServerSpecialize(zygisk::ServerSpecializeArgs *args) override {
+        api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
     }
 
 private:
