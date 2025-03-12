@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <cstring>
-#include <bits/page_size.h>
 #include "dobby.h"
 
 // #include "zygisk.hpp"
@@ -101,10 +100,10 @@ unsigned long get_module_base(const char* module_name)
 void hook_each(unsigned long rel_addr, void* hook, void** backup_){
     LOGE("installing hook at %lx", rel_addr);
     unsigned long addr = rel_addr;
-    // int page_size = getpagesize();
+    int page_size = getpagesize();
 
-    void* page_start = (void*)(addr - addr % PAGE_SIZE);
-    if (-1 == mprotect(page_start, PAGE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC)) {
+    void* page_start = (void*)(addr - addr % page_size);
+    if (-1 == mprotect(page_start, page_size, PROT_READ | PROT_WRITE | PROT_EXEC)) {
         LOGE("mprotect failed(%d)", errno);
         return ;
     }
@@ -113,7 +112,7 @@ void hook_each(unsigned long rel_addr, void* hook, void** backup_){
             reinterpret_cast<void*>(addr),
             hook,
             backup_);
-    mprotect(page_start, PAGE_SIZE, PROT_READ | PROT_EXEC);
+    mprotect(page_start, page_size, PROT_READ | PROT_EXEC);
 }
 
 // ==== Hook ====
