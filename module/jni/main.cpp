@@ -67,6 +67,22 @@ static void send_string(int fd, const char *str) {
     write(fd, str, len);
 }
 
+static std::string read_string(int fd)
+{
+    int len = 0;
+    int r = read(fd, &len, sizeof(len));
+    if (r <= 0) {
+        return "";
+    }
+    if (len <= 0) {
+        return "";
+    }
+    char buf[1024];
+    read(fd, buf, len);
+    buf[len] = '\0';
+    return buf;
+}
+
 // Module
 class ZygiskHook : public zygisk::ModuleBase {
 public:
@@ -84,7 +100,7 @@ public:
         env->ReleaseStringUTFChars(args->app_data_dir, app_data_dir);
     }
 
-    void postAppSpecialize(AppSpecializeArgs *args) override {
+    void postAppSpecialize(const AppSpecializeArgs *args) override {
         if (do_hook) {
             //hook dlopen
             api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
