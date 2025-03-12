@@ -6,4 +6,4 @@ cxx = "27.0.12077973"
 cxx = { group = "org.lsposed.libcxx", name = "libcxx", version.ref = "cxx" }
 
 [plugins]
-android-library = { id = "com.android.library", version.ref = "agp" }
+android-application = { id = "com.android.library", version.ref = "agp" }
