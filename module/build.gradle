@@ -1,11 +1,3 @@
-
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
-}
-
 plugins {
     id 'com.android.library'
 }
@@ -51,10 +43,7 @@ android {
     }
     // */
 }
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
+
 dependencies {
 	implementation "org.lsposed.libcxx:cxx:27.0.12077973"
 }
