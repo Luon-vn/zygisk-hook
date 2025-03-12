@@ -12,6 +12,7 @@
 #include <sys/mman.h>
 #include <cstdlib>
 #include <pthread.h>
+#include "dobby.h"
 
 // #include "zygisk.hpp"
 
@@ -38,12 +39,13 @@ void *my_dlsym(void *handle, const char *name) {
 }
 
 
+static void* libso_handle = nullptr;
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
 void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
     LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
 
     void* handle = orig_android_dlopen_ext(__filename, __flags, __info);
-    /*
+    // /*
     if(!libso_handle){
         if(strstr(__filename, "libdexprotector.so")){
             libso_handle = handle;
@@ -55,7 +57,7 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
     return handle;
 }
 
-/*
+// /*
 static unsigned long base_addr = 0;
 void *hack_thread(void *arg) {
     LOGE("hack thread: %d", gettid());
@@ -64,7 +66,7 @@ void *hack_thread(void *arg) {
     while (true)
     {
         base_addr = get_module_base("libdexprotector.so");
-        if (base_addr != 0 && il2cpp_handle != nullptr) {
+        if (base_addr != 0 && libso_handle != nullptr) {
             break;
         }
     }
@@ -122,7 +124,7 @@ static std::string read_string(int fd)
     return buf;
 }
 
-/*
+// /*
 unsigned long get_module_base(const char* module_name)
 {
     FILE *fp;
