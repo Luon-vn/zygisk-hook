@@ -23,17 +23,21 @@ using zygisk::ServerSpecializeArgs;
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 // ==== Hook ====
-void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
-void *(*orig__dlopen)(const char *filename, int flags);
 
-void *my_dlopen(const char *filename, int flags)
-{
+void *(*orig__dlopen)(const char *filename, int flags);
+void *my_dlopen(const char *filename, int flags) {
     LOGE("dlopen: %s", filename);
     return orig__dlopen(filename, flags);
 }
 
-void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info)
-{
+void *(*orig__dlsym)(void *handle, const char *name);
+void *my_dlsym(void *handle, const char *name) {
+    LOGE("dlsym: %s", name);
+    return orig__dlsym(handle, name);
+}
+
+void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
+void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
     LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
 
     return orig_android_dlopen_ext(__filename, __flags, __info);
@@ -121,9 +125,10 @@ public:
     void postAppSpecialize(const AppSpecializeArgs *args) override {
         if (do_hook) {
             //hook dlopen
-            // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
+            api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
+            api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
             //hook android_dlopen_ext
-            api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
+            // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             api->pltHookCommit();
         }
     }
