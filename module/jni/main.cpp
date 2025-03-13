@@ -191,9 +191,7 @@ AAsset* my_AAssetManager_open(AAssetManager* mgr, const char* filename, int mode
 }
 
 void *(*orig_AAssetDir_getNextFileName)(AAssetDir *assetDir) = nullptr;
-const char * my_AAssetDir_getNextFileName(
-    AAssetDir *assetDir
-) {
+const char * my_AAssetDir_getNextFileName(AAssetDir *assetDir) {
     const char *ret = orig_AAssetDir_getNextFileName(assetDir);
     LOGE("AAssetDir_getNextFileName: %s", ret);
     return ret;
