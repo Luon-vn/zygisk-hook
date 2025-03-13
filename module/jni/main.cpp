@@ -192,7 +192,7 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
                 LOGE("libso exported func addr %lx", exportedFunc);
             }
 
-            hook_each(exportedFunc+93208, (void *) my_lib_func, (void **) orig_lib_func);
+            hook_each((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) orig_lib_func);
 
             sleep(5);
         }
@@ -208,12 +208,7 @@ void *hack_thread(void *arg) {
     LOGE("hack thread: %d", gettid());
     srand(time(nullptr));
 
-    while (true) {
-        libso_base_addr = get_module_base(TARGET_LIB);
-        if (libso_base_addr != 0 && libso_handle != nullptr) {
-            break;
-        }
-    }
+    // wait for libso loaded
     LOGE("detect libso %lx, start sleep", libso_base_addr);
 
     while (true) {
