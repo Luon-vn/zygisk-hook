@@ -192,7 +192,9 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
                 LOGE("libso exported func addr %lx", exportedFunc);
             }
 
-            hook_each((unsigned long)exportedFunc+93208, (void *) my_lib_func, (void **) orig_lib_func);
+            if (0 == DobbyHook((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
+                LOGE("libso hooked func addr %lx", (unsigned long)exportedFunc+93208);
+            }
 
             sleep(5);
         }
