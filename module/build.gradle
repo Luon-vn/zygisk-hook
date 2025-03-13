@@ -39,7 +39,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                arguments "-DCMAKE_BUILD_TYPE=MinSizeRel", "-DANDROID_STL=none"
+                arguments "-DCMAKE_BUILD_TYPE=MinSizeRel", /* "-DANDROID_STL=none" static libcxx build */ "-DANDROID_STL=c++_shared" /* shared libc++ build */
                 cFlags "-std=c23", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
                 cppFlags "-std=c++23", "-fno-exceptions", "-fno-rtti", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
             }
