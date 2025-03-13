@@ -36,8 +36,10 @@ android {
     ndkVersion '28.0.13004108'
     // ndkVersion '28.1.8111888'
 
-    ndk {
-        abiFilters = 'armeabi-v7a', 'arm64-v8a' // , 'x86', 'x86_64'
+    buildTypes{
+        ndk {
+            abiFilters = ['armeabi-v7a', 'arm64-v8a']
+        }
     }
     defaultConfig {
         minSdkVersion 27
