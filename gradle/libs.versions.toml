@@ -5,5 +5,4 @@ bytehookver = "1.1.1"
 
 [libraries]
 cxx = { group = "org.lsposed.libcxx", name = "libcxx", version.ref = "cxxver" }
-shadowhook = { group = "com.bytedance.android", name = "shadowhook", version.ref = "shadowhookver" }
 bytehook = { group = "com.bytedance", name = "bytehook", version.ref = "bytehookver" }

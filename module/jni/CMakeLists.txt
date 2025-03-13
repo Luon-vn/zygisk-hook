@@ -31,7 +31,7 @@ link_libraries(bytehook::bytehook)
 if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
     find_package(shadowhook REQUIRED CONFIG)
     target_link_libraries(shadowhook::shadowhook)
-endif ()
+endif()
 
 # Main source
 # SET_OPTION(Plugin.Android.BionicLinkerUtil ON)
