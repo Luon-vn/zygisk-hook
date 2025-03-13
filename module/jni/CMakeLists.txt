@@ -12,8 +12,8 @@ link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 # link_libraries(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 # set(ANDROID_STL "c++_shared") # CXX STL mode for lib
-# set(CMAKE_CXX_STANDARD 23)
-# set(CMAKE_C_STANDARD 23)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_C_STANDARD 23)
 
 # libcxx from gradle/libs.versions.toml
 #find_package(cxx REQUIRED CONFIG)
@@ -25,13 +25,14 @@ link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 # link_libraries(dobby_static)
 
 # bytehook
-# find_package(bytehook REQUIRED CONFIG)
-# link_libraries(bytehook::bytehook)
+find_package(bytehook REQUIRED CONFIG)
+link_libraries(bytehook::bytehook)
 
 # shadowhook
 if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
     find_package(shadowhook REQUIRED CONFIG)
-    link_libraries(shadowhook::shadowhook)
+    add_libraries(shadowhook::shadowhook STATIC IMPORTED)
+    # link_libraries(shadowhook::shadowhook)
 endif()
 
 # Main source
