@@ -42,7 +42,7 @@ using zygisk::ServerSpecializeArgs;
 void *InlineHooker(void *target, void *hooker) {
     _make_rwx(target, _page_size);
     void *origin_call;
-    if (DobbyHook(target, hooker, &origin_call) == RS_SUCCESS) {
+    if (DobbyHook(target, hooker, &origin_call) == 0) {
         return origin_call;
     } else {
         return nullptr;
@@ -50,7 +50,7 @@ void *InlineHooker(void *target, void *hooker) {
 }
 
 bool InlineUnhooker(void *func) {
-    return DobbyDestroy(func) == RT_SUCCESS;
+    return DobbyDestroy(func) == 0;
 }
 
 // Utils
