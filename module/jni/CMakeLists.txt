@@ -28,6 +28,9 @@ set(CMAKE_C_STANDARD 23)
 find_package(shadowhook REQUIRED CONFIG)
 link_libraries(shadowhook::shadowhook)
 
+find_package(bytehook REQUIRED CONFIG)
+link_libraries(bytehook::bytehook)
+
 # Main source
 # SET_OPTION(Plugin.Android.BionicLinkerUtil ON)
 add_library(${CMAKE_PROJECT_NAME} SHARED ${CMAKE_SOURCE_DIR}/main.cpp)
