@@ -36,13 +36,28 @@ android {
 
         ///* CMake
         ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            abiFilters
+                // 'x86',
+                // 'x86_64',
+                // 'arm64-v8a',
+                'armeabi-v7a'
         }
         externalNativeBuild {
             cmake {
-                arguments "-DCMAKE_BUILD_TYPE=MinSizeRel", "-DANDROID_STL=none" /* static libcxx build */ /* "-DANDROID_STL=c++_shared" /* shared libc++ build */
-                cFlags "-std=c23", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
-                cppFlags "-std=c++23", "-fno-exceptions", "-fno-rtti", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
+                arguments
+                    "-DCMAKE_BUILD_TYPE=MinSizeRel",
+                    // "-DANDROID_STL=none" // static libcxx build
+                    "-DANDROID_STL=c++_shared" // shared libc++ build
+                cFlags
+                    "-std=c23",
+                    "-fvisibility=hidden",
+                    "-fvisibility-inlines-hidden"
+                cppFlags
+                    "-std=c++23",
+                    "-fno-exceptions",
+                    "-fno-rtti",
+                    "-fvisibility=hidden",
+                    "-fvisibility-inlines-hidden"
             }
         }
         // */
