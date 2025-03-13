@@ -22,7 +22,7 @@ using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 using zygisk::ServerSpecializeArgs;
 
-#define TARGET_LIB "libalice.so"
+#define TARGET_LIB "libdexprotector.so"
 #define LOG_TAG "ZygiskHook"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -96,22 +96,6 @@ static std::string read_string(int fd)
     read(fd, buf, len);
     buf[len] = '\0';
     return buf;
-}
-
-void hook_each(unsigned long rel_addr, void* hook, void** backup_){
-    LOGE("installing hook at %lx", rel_addr);
-    unsigned long addr = rel_addr;
-    int page_size = getpagesize();
-
-    void* page_start = (void*)(addr - addr % page_size);
-    if (-1 == mprotect(page_start, page_size, PROT_READ | PROT_WRITE | PROT_EXEC)) {
-        LOGE("mprotect failed(%d)", errno);
-        return ;
-    }
-    if (DobbyHook(reinterpret_cast<void*>(addr), hook, backup_) == 0) {
-        LOGE("installed hook at %lx", rel_addr);
-    }
-    mprotect(page_start, page_size, PROT_READ | PROT_EXEC);
 }
 
 // ==== Hook ====
@@ -196,6 +180,12 @@ void *(*orig_dlsym)(void *handle, const char *name);
 void *my_dlsym(void *handle, const char *name) {
     LOGE("dlsym: %s", name);
     return orig_dlsym(handle, name);
+}
+
+void *(*orig_AAssetManager_open)(void *mgr, const char *filename, int mode);
+void *my_AAssetManager_open(void *mgr, const char *filename, int mode) {
+    LOGE("AAssetManager_open: %s %d", filename, mode);
+    return orig_AAssetManager_open(mgr, filename, mode);
 }
 
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
@@ -287,6 +277,8 @@ public:
             // api->pltHookCommit();
 
             // dobby hook
+            DobbyHook(DobbySymbolResolver(nullptr, "AAssetManager_open"), (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
+            DobbyHook(DobbySymbolResolver(nullptr, "kill"), (void *) my_kill, (void **) &orig_kill);
             DobbyHook(DobbySymbolResolver(nullptr, "dlopen"), (void *) my_dlopen, (void **) &orig_dlopen);
             DobbyHook(DobbySymbolResolver(nullptr, "dlsym"), (void *) my_dlsym, (void **) &orig_dlsym);
             DobbyHook(DobbySymbolResolver(nullptr, "android_dlopen_ext"), (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
