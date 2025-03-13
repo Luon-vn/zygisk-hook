@@ -27,6 +27,32 @@ using zygisk::ServerSpecializeArgs;
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
+
+#define _uintval(p)               reinterpret_cast<uintptr_t>(p)
+#define _ptr(p)                   reinterpret_cast<void *>(p)
+#define _align_up(x, n)           (((x) + ((n) - 1)) & ~((n) - 1))
+#define _align_down(x, n)         ((x) & -(n))
+#define _page_size                4096
+#define _page_align(n)            _align_up(static_cast<uintptr_t>(n), _page_size)
+#define _ptr_align(x)             _ptr(_align_down(reinterpret_cast<uintptr_t>(x), _page_size))
+#define _make_rwx(p, n)           ::mprotect(_ptr_align(p), \
+                                              _page_align(_uintval(p) + n) != _page_align(_uintval(p)) ? _page_align(n) + _page_size : _page_align(n), \
+                                              PROT_READ | PROT_WRITE | PROT_EXEC)
+
+void *InlineHooker(void *target, void *hooker) {
+    _make_rwx(target, _page_size);
+    void *origin_call;
+    if (DobbyHook(target, hooker, &origin_call) == RS_SUCCESS) {
+        return origin_call;
+    } else {
+        return nullptr;
+    }
+}
+
+bool InlineUnhooker(void *func) {
+    return DobbyDestroy(func) == RT_SUCCESS;
+}
+
 // Utils
 
 static std::string readFirstLine(const char *filename) {
@@ -157,12 +183,6 @@ void *my_open_2(const char *file, int oflag) {
     return orig_open_2(file, oflag);
 }
 
-void *(*orig_system_property_find)(const char *name);
-void *my_system_property_find(const char *name) {
-    LOGE("system_property_find: %s", name);
-    return orig_system_property_find(name);
-}
-
 void *(*orig_kill)(pid_t pid, int sig);
 void *my_kill(pid_t pid, int sig) {
     LOGE("kill: %d flags: %d", pid, sig);
@@ -202,7 +222,13 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
             }
             LOGE("libso base addr %lx", libso_base_addr);
 
+            void* startFunc = DobbySymbolResolver(TARGET_LIB, "start");
+
+            LOGE("libso start addr %lx", (unsigned long)startFunc);
+
             hook_each(libso_base_addr+0x3f0b4, (void *) my_lib_func, (void **) orig_lib_func);
+
+            sleep(5);
         }
     }
     // */
@@ -269,12 +295,11 @@ public:
         if (do_hook) {
             LOGE("module: start hooking");
             //hook dlopen
-            api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
+            // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
             api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
             //hook android_dlopen_ext
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
 
-            // api->pltHookRegister(".*", "__system_property_find", (void *) my_system_property_find, (void **) &orig_system_property_find);
             api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
             api->pltHookCommit();
 
