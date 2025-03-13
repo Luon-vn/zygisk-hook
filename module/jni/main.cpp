@@ -114,6 +114,12 @@ void hook_each(unsigned long rel_addr, void* hook, void** backup_){
 
 // ==== Hook ====
 
+void *(*orig_kill)(pid_t pid, int sig);
+void *my_kill(pid_t pid, int sig) {
+    LOGE("kill: %d flags: %d", pid, sig);
+    return orig_kill(pid, sig);
+}
+
 void *(*orig__dlopen)(const char *filename, int flags);
 void *my_dlopen(const char *filename, int flags) {
     LOGE("dlopen: %s flags: %08x", filename, flags);
