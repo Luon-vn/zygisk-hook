@@ -21,6 +21,7 @@ using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 using zygisk::ServerSpecializeArgs;
 
+#define TARGET_LIB "libalice.so"
 #define LOG_TAG "ZygiskHook"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -159,17 +160,19 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
     void* handle = orig_android_dlopen_ext(__filename, __flags, __info);
     // /*
     if(!libso_handle){
-        if(strstr(__filename, "libdexprotector.so")){
+        if(strstr(__filename, TARGET_LIB)){
             libso_handle = handle;
-            LOGE("got libdexprotector handle at %lx", (long)libso_handle);
+            LOGE("libso handle %lx", (long)libso_handle);
 
             while (true) {
-                libso_base_addr = get_module_base("libdexprotector.so");
+                libso_base_addr = get_module_base(TARGET_LIB);
                 if (libso_base_addr != 0 && libso_handle != nullptr) {
                     break;
                 }
             }
-            LOGE("detect libdexprotector.so %lx", libso_base_addr);
+            LOGE("libso base addr %lx", libso_base_addr);
+
+            hook_each(libso_base_addr+0x3f0b4, (void *) my_lib_func, (void **) orig_lib_func);
         }
     }
     // */
@@ -184,12 +187,12 @@ void *hack_thread(void *arg) {
     srand(time(nullptr));
 
     while (true) {
-        libso_base_addr = get_module_base("libdexprotector.so");
+        libso_base_addr = get_module_base(TARGET_LIB);
         if (libso_base_addr != 0 && libso_handle != nullptr) {
             break;
         }
     }
-    LOGE("detect libdexprotector.so %lx, start sleep", libso_base_addr);
+    LOGE("detect libso %lx, start sleep", libso_base_addr);
 
     while (true) {
         sleep(2);
