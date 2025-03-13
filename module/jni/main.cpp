@@ -125,12 +125,6 @@ void *my_system_property_find(const char *name) {
     return orig_system_property_find(name);
 }
 
-void *(*orig_system_property_get)(const char *name, char *value);
-void *my_system_property_get(const char *name, char *value) {
-    LOGE("system_property_get: %s %s", name, value);
-    return orig_system_property_get(name, value);
-}
-
 void *(*orig_kill)(pid_t pid, int sig);
 void *my_kill(pid_t pid, int sig) {
     LOGE("kill: %d flags: %d", pid, sig);
@@ -228,13 +222,13 @@ public:
         if (do_hook) {
             LOGE("module: start hooking");
             //hook dlopen
-            // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
-            // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
-            api->pltHookRegister(".*", "__system_property_get", (void *) my_system_property_get, (void **) &orig_system_property_get);
-            api->pltHookRegister(".*", "__system_property_find", (void *) my_system_property_find, (void **) &orig_system_property_find);
-            api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
+            api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
+            api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
             //hook android_dlopen_ext
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
+
+            api->pltHookRegister(".*", "__system_property_find", (void *) my_system_property_find, (void **) &orig_system_property_find);
+            api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
             api->pltHookCommit();
 
             // int ret;
