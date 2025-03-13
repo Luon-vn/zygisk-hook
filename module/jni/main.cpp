@@ -162,28 +162,17 @@ void *my_kill(pid_t pid, int sig) {
     return orig_kill(pid, sig);
 }
 
+static unsigned long libso_base_addr = 0;
+static void* libso_handle = nullptr;
+
 void *(*orig_dlopen)(const char *filename, int flags);
 void *my_dlopen(const char *filename, int flags) {
     LOGE("dlopen: %s flags: %08x", filename, flags);
-    return orig_dlopen(filename, flags);
-}
 
-void *(*orig_dlsym)(void *handle, const char *name);
-void *my_dlsym(void *handle, const char *name) {
-    LOGE("dlsym: %s", name);
-    return orig_dlsym(handle, name);
-}
-
-static unsigned long libso_base_addr = 0;
-static void* libso_handle = nullptr;
-void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
-void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
-    LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
-
-    void* handle = orig_android_dlopen_ext(__filename, __flags, __info);
+    void* handle = orig_dlopen(filename, flags);
     // /*
     if(!libso_handle){
-        if(strstr(__filename, TARGET_LIB)){
+        if(strstr(filename, TARGET_LIB)){
             libso_handle = handle;
             LOGE("libso handle %lx", (long)libso_handle);
 
@@ -203,6 +192,18 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
 
 
     return handle;
+}
+
+void *(*orig_dlsym)(void *handle, const char *name);
+void *my_dlsym(void *handle, const char *name) {
+    LOGE("dlsym: %s", name);
+    return orig_dlsym(handle, name);
+}
+
+void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
+void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
+    LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
+    return orig_android_dlopen_ext(__filename, __flags, __info);
 }
 
 // /*
@@ -263,7 +264,7 @@ public:
             //hook android_dlopen_ext
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
 
-            api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
+            // api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
             api->pltHookCommit();
 
             hook_system_property_read_callback();
