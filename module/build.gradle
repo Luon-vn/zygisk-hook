@@ -89,6 +89,7 @@ android {
 dependencies {
     // gradle/libs.versions.toml
     // implementation libs.cxx
-    // implementation libs.bytehook
+    implementation libs.bytehook
     implementation 'com.bytedance.android:shadowhook:1.1.1'
+    // implementation 'com.bytedance:bytehook:1.1.1'
 }
