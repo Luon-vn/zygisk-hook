@@ -1,4 +1,5 @@
 #include <jni.h>
+#include <sys/system_properties.h>
 #include <string>
 #include "zygisk.h"
 #include <android/log.h>
@@ -108,12 +109,41 @@ void hook_each(unsigned long rel_addr, void* hook, void** backup_){
         LOGE("mprotect failed(%d)", errno);
         return ;
     }
-
-    DobbyHook(reinterpret_cast<void*>(addr), hook, backup_);
+    if (DobbyHook(reinterpret_cast<void*>(addr), hook, backup_) == 0) {
+        LOGE("installed hook at %lx", rel_addr);
+    }
     mprotect(page_start, page_size, PROT_READ | PROT_EXEC);
 }
 
 // ==== Hook ====
+typedef void (*T_Callback)(void *, const char *, const char *, uint32_t);
+static T_Callback o_callback = nullptr;
+static void (*orig_system_property_read_callback)(prop_info *, T_Callback, void *) = nullptr;
+static void modify_callback(void *cookie, const char *name, const char *value, uint32_t serial) {
+    if (!cookie || !name || !value || !o_callback) return;
+
+    const char *oldValue = value;
+
+    std::string_view prop(name);
+
+    LOGE("modify_callback[%s]: %s", name, oldValue);
+    return o_callback(cookie, name, value, serial);
+}
+static void my_system_property_read_callback(prop_info *pi, T_Callback callback, void *cookie) {
+    if (pi && callback && cookie) o_callback = callback;
+    return orig_system_property_read_callback(pi, modify_callback, cookie);
+}
+static bool hook_system_property_read_callback() {
+    void *ptr = DobbySymbolResolver(nullptr, "__system_property_read_callback");
+    if (ptr && DobbyHook(ptr, (void *) my_system_property_read_callback,
+                         (void **) &o_system_property_read_callback) == 0) {
+        LOGE("hook __system_property_read_callback successful at %p", ptr);
+        return true;
+    }
+    LOGE("hook __system_property_read_callback failed!");
+    return false;
+}
+
 void *(*orig_lib_func)(void *a1, void *a2, int a3);
 void *my_lib_func(void *a1, void *a2, int a3) {
     void* ret = orig_lib_func(a1, a2, a3);
@@ -248,6 +278,7 @@ public:
             api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
             api->pltHookCommit();
 
+            hook_system_property_read_callback();
             // int ret;
             // pthread_t ntid;
             // if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
