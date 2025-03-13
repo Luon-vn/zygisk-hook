@@ -25,8 +25,6 @@ typedef enum {
 typedef uintptr_t addr_t;
 typedef uint32_t addr32_t;
 typedef uint64_t addr64_t;
-typedef void (*dobby_dummy_func_t)();
-typedef void (*asm_func_t)();
 
 MemoryOperationError DobbyCodePatch(void *address, uint8_t *buffer, uint32_t buffer_size);
 
@@ -150,7 +148,7 @@ int DobbyWrap(void *function_address, PreCallTy pre_call, PostCallTy post_call);
 #endif
 
 // function inline hook
-int DobbyHook(void *address, dobby_dummy_func_t replace_func, dobby_dummy_func_t *origin_func);
+int DobbyHook(void *address, void * replace_func, void **origin_func);
 
 // dynamic binary instruction instrument
 // [!!! READ ME !!!]
@@ -164,8 +162,8 @@ const char *DobbyGetVersion();
 
 void *DobbySymbolResolver(const char *image_name, const char *symbol_name);
 
-int DobbyImportTableReplace(char *image_name, char *symbol_name, dobby_dummy_func_t fake_func,
-                            dobby_dummy_func_t *orig_func);
+int DobbyImportTableReplace(char *image_name, char *symbol_name, void * fake_func,
+                            void **orig_func);
 
 // [!!! READ ME !!!]
 // for arm, Arm64, dobby will try use b xxx instead of ldr absolute indirect branch
