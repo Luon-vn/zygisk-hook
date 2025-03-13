@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.22)
 
 project(zygiskhook)
 # https://github.com/liyafe1997/PlayIntegrityFix
+set()
 
 # ./libcxx prebuilt
 include_directories(${CMAKE_SOURCE_DIR}/libcxx/include)
-link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 # ./DobbyHook Prebuilt
 # include_directories(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/include)
@@ -17,22 +18,21 @@ set(CMAKE_C_STANDARD 23)
 
 # libcxx from gradle/libs.versions.toml
 #find_package(cxx REQUIRED CONFIG)
-#link_libraries(cxx::cxx)
+#target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE cxx::cxx)
 
 # DobbyHook source
 # git submodule add -- https://github.com/JingMatrix/Dobby.git ./module/jni/Dobby
 # add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
-# link_libraries(dobby_static)
+# target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE dobby_static)
 
 # bytehook
 find_package(bytehook REQUIRED CONFIG)
-link_libraries(bytehook::bytehook)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE bytehook::bytehook)
 
 # shadowhook
 if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
     find_package(shadowhook REQUIRED CONFIG)
-    add_libraries(shadowhook::shadowhook STATIC IMPORTED)
-    # link_libraries(shadowhook::shadowhook)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE shadowhook::shadowhook)
 endif()
 
 # Main source
