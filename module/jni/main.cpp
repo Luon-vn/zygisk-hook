@@ -222,7 +222,7 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
             }
             LOGE("libso base addr %lx", libso_base_addr);
 
-            uintptr_t startFunc = (uintptr_t)DobbySymbolResolver(TARGET_LIB, "start");
+            uintptr_t startFunc = (uintptr_t)DobbySymbolResolver(TARGET_LIB, "JNI_OnLoad");
 
             LOGE("libso start addr %lx", startFunc);
 
