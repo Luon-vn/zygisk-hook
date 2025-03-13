@@ -206,8 +206,8 @@ public:
             // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
             // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
             //hook android_dlopen_ext
-            // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
-            // api->pltHookCommit();
+            api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
+            api->pltHookCommit();
 
             // int ret;
             // pthread_t ntid;
@@ -215,9 +215,10 @@ public:
             //     LOGE("can't create thread: %s\n", strerror(ret));
             // }
 
-            sleep(2);
+            // sleep(2); // works!
 
-            api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
+            // dlclose this zygisk module
+            // api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
         }
     }
 
