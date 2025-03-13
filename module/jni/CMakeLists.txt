@@ -14,7 +14,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE log )
 
 # ./libcxx prebuilt
 include_directories(${CMAKE_SOURCE_DIR}/libcxx/include)
-target_link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
+link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 # ./DobbyHook Prebuilt
 # include_directories(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/include)
