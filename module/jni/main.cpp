@@ -121,7 +121,7 @@ void *my_open_2(const char *file, int oflag) {
 
 void *(*orig_system_property_find)(const char *name);
 void *my_system_property_find(const char *name) {
-    LOGE("system_property_find: %s %s", name);
+    LOGE("system_property_find: %s", name);
     return orig_system_property_find(name);
 }
 
