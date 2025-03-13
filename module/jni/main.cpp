@@ -138,7 +138,7 @@ void *my_dlopen(const char *filename, int flags) {
                 LOGE("libso exported func addr %lx", exportedFunc);
             }
 
-            if (0 == DobbyHook((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
+            if (NULL != shadowhook_hook_sym_name((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
                 LOGE("libso hooked func addr %lx", (unsigned long)exportedFunc+93208);
             }
 
@@ -178,7 +178,7 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
                 LOGE("libso exported func addr %lx", exportedFunc);
             }
 
-            if (0 == DobbyHook((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
+            if (NULL != shadowhook_hook_sym_name((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
                 LOGE("libso hooked func addr %lx", (unsigned long)exportedFunc+93208);
             }
 
