@@ -170,7 +170,7 @@ void *my_dlopen(const char *filename, int flags) {
     LOGE("dlopen: %s flags: %08x", filename, flags);
 
     void* handle = orig_dlopen(filename, flags);
-    // /*
+    /*
     if(!libso_handle){
         if(strstr(filename, TARGET_LIB)){
             libso_handle = handle;
@@ -189,8 +189,6 @@ void *my_dlopen(const char *filename, int flags) {
         }
     }
     // */
-
-
     return handle;
 }
 
@@ -203,7 +201,28 @@ void *my_dlsym(void *handle, const char *name) {
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
 void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
     LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
-    return orig_android_dlopen_ext(__filename, __flags, __info);
+
+    void* handle = orig_android_dlopen_ext(__filename, __flags, __info);
+    // /*
+    if(!libso_handle){
+        if(strstr(__filename, TARGET_LIB)){
+            libso_handle = handle;
+            LOGE("libso handle %lx", (long)libso_handle);
+
+            void *exportedFunc = DobbySymbolResolver(TARGET_LIB, "JNI_OnLoad");
+            if (exportedFunc != nullptr) {
+                LOGE("libso exported func addr %lx", exportedFunc);
+            }
+
+            if (0 == DobbyHook((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
+                LOGE("libso hooked func addr %lx", (unsigned long)exportedFunc+93208);
+            }
+
+            sleep(5);
+        }
+    }
+    // */
+    return handle;
 }
 
 // /*
@@ -258,18 +277,20 @@ public:
         // LOGE("start postAppSpecialize");
         if (do_hook) {
             LOGE("module: start hooking");
-            //hook dlopen
-            DobbyHook(DobbySymbolResolver(nullptr, "dlopen"), (void *) my_dlopen, (void **) &orig_dlopen);
             
+            // zygisk hook, maybe missing some call, duno @@
             // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
             // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
             //hook android_dlopen_ext
             // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
-
             // api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
-            api->pltHookCommit();
+            // api->pltHookCommit();
 
-            hook_system_property_read_callback();
+            // dobby hook
+            DobbyHook(DobbySymbolResolver(nullptr, "dlopen"), (void *) my_dlopen, (void **) &orig_dlopen);
+            DobbyHook(DobbySymbolResolver(nullptr, "dlsym"), (void *) my_dlsym, (void **) &orig_dlsym);
+            DobbyHook(DobbySymbolResolver(nullptr, "android_dlopen_ext"), (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
+            // hook_system_property_read_callback();
             // int ret;
             // pthread_t ntid;
             // if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
