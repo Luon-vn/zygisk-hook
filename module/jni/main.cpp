@@ -98,33 +98,6 @@ static std::string read_string(int fd)
     return buf;
 }
 
-unsigned long get_module_base(const char* module_name)
-{
-    FILE *fp;
-    unsigned long addr = 0;
-    char *pch;
-    char filename[32];
-    char line[1024];
-
-    snprintf(filename, sizeof(filename), "/proc/self/maps");
-
-    fp = fopen(filename, "r");
-
-    if (fp != nullptr) {
-        while (fgets(line, sizeof(line), fp)) {
-            if (strstr(line, module_name) && strstr(line, "r-xp")) {
-                pch = strtok(line, "-");
-                addr = strtoul(pch, nullptr, 16);
-                if (addr == 0x8000)
-                    addr = 0;
-                break;
-            }
-        }
-        fclose(fp);
-    }
-    return addr;
-}
-
 void hook_each(unsigned long rel_addr, void* hook, void** backup_){
     LOGE("installing hook at %lx", rel_addr);
     unsigned long addr = rel_addr;
@@ -214,19 +187,12 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
             libso_handle = handle;
             LOGE("libso handle %lx", (long)libso_handle);
 
-            while (true) {
-                libso_base_addr = get_module_base(TARGET_LIB);
-                if (libso_base_addr != 0 && libso_handle != nullptr) {
-                    break;
-                }
+            void *exportedFunc = DobbySymbolResolver(TARGET_LIB, "JNI_OnLoad");
+            if (exportedFunc != nullptr) {
+                LOGE("libso exported func addr %lx", exportedFunc);
             }
-            LOGE("libso base addr %lx", libso_base_addr);
 
-            uintptr_t startFunc = (uintptr_t)DobbySymbolResolver(TARGET_LIB, "JNI_OnLoad");
-
-            LOGE("libso start addr %lx", startFunc);
-
-            hook_each(libso_base_addr+0x3f0b4, (void *) my_lib_func, (void **) orig_lib_func);
+            hook_each(exportedFunc+93208, (void *) my_lib_func, (void **) orig_lib_func);
 
             sleep(5);
         }
