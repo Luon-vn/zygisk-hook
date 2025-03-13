@@ -113,6 +113,13 @@ void hook_each(unsigned long rel_addr, void* hook, void** backup_){
 }
 
 // ==== Hook ====
+void *(*orig_lib_func)(void *a1, void *a2, int a3);
+void *my_lib_func(void *a1, void *a2, int a3) {
+    void* ret = orig_lib_func(a1, a2, a3);
+    LOGE("lib_func: %s", ret);
+    return ret;
+}
+
 void *(*orig_open_2)(const char *file, int oflag);
 void *my_open_2(const char *file, int oflag) {
     LOGE("open_2: %s %d", file, oflag);
@@ -154,7 +161,14 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
         if(strstr(__filename, "libdexprotector.so")){
             libso_handle = handle;
             LOGE("got libdexprotector handle at %lx", (long)libso_handle);
-            sleep(5);
+
+            while (true) {
+                base_addr = get_module_base("libdexprotector.so");
+                if (base_addr != 0 && libso_handle != nullptr) {
+                    break;
+                }
+            }
+            LOGE("detect libdexprotector.so %lx", base_addr);
         }
     }
     // */
