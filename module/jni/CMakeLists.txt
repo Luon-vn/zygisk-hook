@@ -27,6 +27,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libcxx/$
 # DobbyHook source
 # git submodule add -- https://github.com/JingMatrix/Dobby.git ./module/jni/Dobby
 add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
+target_link_libraries(dobby_static PRIVATE ${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE dobby_static)
 
 # bytehook
