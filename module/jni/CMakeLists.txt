@@ -31,8 +31,8 @@ set(CMAKE_C_STANDARD 23)
 # target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE dobby_static)
 
 # bytehook
-find_package(bytehook REQUIRED CONFIG)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE bytehook::bytehook)
+# find_package(bytehook REQUIRED CONFIG)
+# target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE bytehook::bytehook)
 
 # shadowhook
 if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
