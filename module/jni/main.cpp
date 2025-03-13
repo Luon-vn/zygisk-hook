@@ -93,7 +93,7 @@ static void my_system_property_read_callback(prop_info *pi, T_Callback callback,
 }
 static bool hook_system_property_read_callback() {
     if (shadowhook_hook_sym_name(nullptr, "__system_property_read_callback", (void *) my_system_property_read_callback, (void **) &orig_system_property_read_callback) != NULL) {
-        LOGE("hook __system_property_read_callback successful at %p", ptr);
+        LOGE("hook __system_property_read_callback successful");
         return true;
     }
     LOGE("hook __system_property_read_callback failed!");
