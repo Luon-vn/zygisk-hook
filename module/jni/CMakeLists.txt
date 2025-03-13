@@ -9,7 +9,6 @@ project(zygiskhook)
 
 # ./Dobby Prebuilt
 include_directories(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/include)
-link_libraries(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 set(ANDROID_STL "c++_shared") # CXX STL mode for lib
 set(CMAKE_CXX_STANDARD 23)
@@ -31,4 +30,4 @@ add_library(${CMAKE_PROJECT_NAME} SHARED ${CMAKE_SOURCE_DIR}/main.cpp)
 target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE c_std_23 cxx_std_23)
 
 # Dobby Prebuilt
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE log )
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE log ${CMAKE_SOURCE_DIR}/DobbyPrebuilt/${CMAKE_ANDROID_ARCH_ABI}.a)

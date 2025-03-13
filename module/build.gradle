@@ -34,7 +34,7 @@ android {
         minSdkVersion 27
         targetSdkVersion 35
 
-        ///* CMake
+        // CMake
         ndk {
             abiFilters 'armeabi-v7a' /* , 'arm64-v8a', 'x86', 'x86_64' */
         }
@@ -45,11 +45,11 @@ android {
         //         cppFlags "-std=c++23", "-fno-exceptions", "-fno-rtti", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
         //     }
         // }
-        // */
+        // !CMake
 
     }
 
-    /* Android.mk
+    /* Android.mk instead of CMake
     externalNativeBuild {
         ndkBuild {
             path("jni/Android.mk")
