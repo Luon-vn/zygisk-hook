@@ -183,9 +183,9 @@ void *my_dlsym(void *handle, const char *name) {
     return orig_dlsym(handle, name);
 }
 
-static AAsset* (*orig_AAssetManager_open)(AAssetManager*, const char*, int) = nullptr;
+static AAsset* (*orig_AAssetManager_open)(AAssetManager* mgr, const char* filename, int mode);
 static AAsset* my_AAssetManager_open(AAssetManager* mgr, const char* filename, int mode) {
-    LOGE("AAssetManager_open: %s %d", filename, mode);
+    // LOGE("AAssetManager_open: %s %d", filename, mode);
     return orig_AAssetManager_open(mgr, filename, mode);
 }
 
