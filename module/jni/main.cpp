@@ -147,6 +147,8 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
     }
     // */
 
+    sleep(5);
+
     return handle;
 }
 
@@ -273,7 +275,7 @@ static void companion_handler(int fd) {
     if (std::filesystem::exists(config_file)) {
         std::string hook = readFirstLine(config_file.c_str());
         if (!hook.empty()) {
-            LOGE("companion: do hook %s", package_name.c_str());
+            LOGE("\n\n===========================\ncompanion: do hook %s", package_name.c_str());
             send_string(fd, "1");
             return;
         }
