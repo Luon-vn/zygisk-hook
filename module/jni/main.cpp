@@ -192,7 +192,7 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
                 LOGE("libso exported func addr %lx", exportedFunc);
             }
 
-            hook_each((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) orig_lib_func);
+            hook_each((void *)((uintptr_t)exportedFunc+93208), (void *) my_lib_func, (void **) orig_lib_func);
 
             sleep(5);
         }
