@@ -241,7 +241,7 @@ public:
             //hook android_dlopen_ext
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
 
-            api->pltHookRegister(".*", "__system_property_find", (void *) my_system_property_find, (void **) &orig_system_property_find);
+            // api->pltHookRegister(".*", "__system_property_find", (void *) my_system_property_find, (void **) &orig_system_property_find);
             api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
             api->pltHookCommit();
 
