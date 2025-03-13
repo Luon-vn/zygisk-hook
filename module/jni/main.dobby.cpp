@@ -3,7 +3,6 @@
 #include <android/asset_manager.h>
 #include <string>
 #include "zygisk.h"
-// #include "zygisk.hpp"
 #include <android/log.h>
 #include <dlfcn.h>
 #include <android/dlext.h>
@@ -16,8 +15,9 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <cstring>
-// #include "dobby.h"
-#include "shadowhook.h"
+#include "dobby.h"
+
+// #include "zygisk.hpp"
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
@@ -27,6 +27,32 @@ using zygisk::ServerSpecializeArgs;
 #define LOG_TAG "ZygiskHook"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+
+
+#define _uintval(p)               reinterpret_cast<uintptr_t>(p)
+#define _ptr(p)                   reinterpret_cast<void *>(p)
+#define _align_up(x, n)           (((x) + ((n) - 1)) & ~((n) - 1))
+#define _align_down(x, n)         ((x) & -(n))
+#define _page_size                4096
+#define _page_align(n)            _align_up(static_cast<uintptr_t>(n), _page_size)
+#define _ptr_align(x)             _ptr(_align_down(reinterpret_cast<uintptr_t>(x), _page_size))
+#define _make_rwx(p, n)           ::mprotect(_ptr_align(p), \
+                                              _page_align(_uintval(p) + n) != _page_align(_uintval(p)) ? _page_align(n) + _page_size : _page_align(n), \
+                                              PROT_READ | PROT_WRITE | PROT_EXEC)
+
+void *InlineHooker(void *target, void *hooker) {
+    _make_rwx(target, _page_size);
+    void *origin_call;
+    if (DobbyHook(target, hooker, &origin_call) == 0) {
+        return origin_call;
+    } else {
+        return nullptr;
+    }
+}
+
+bool InlineUnhooker(void *func) {
+    return DobbyDestroy(func) == 0;
+}
 
 // Utils
 
@@ -92,7 +118,9 @@ static void my_system_property_read_callback(prop_info *pi, T_Callback callback,
     return orig_system_property_read_callback(pi, modify_callback, cookie);
 }
 static bool hook_system_property_read_callback() {
-    if (shadowhook_hook_sym_name(nullptr, "__system_property_read_callback", (void *) my_system_property_read_callback, (void **) &orig_system_property_read_callback) != NULL) {
+    void *ptr = DobbySymbolResolver(nullptr, "__system_property_read_callback");
+    if (ptr && DobbyHook(ptr, (void *) my_system_property_read_callback,
+                         (void **) &orig_system_property_read_callback) == 0) {
         LOGE("hook __system_property_read_callback successful at %p", ptr);
         return true;
     }
@@ -251,11 +279,11 @@ public:
             // api->pltHookCommit();
 
             // dobby hook
-            shadowhook_hook_sym_name(nullptr, "kill", (void *) my_kill, (void **) &orig_kill);
-            shadowhook_hook_sym_name(nullptr, "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
-            shadowhook_hook_sym_name(nullptr, "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
-            shadowhook_hook_sym_name(nullptr, "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
-            shadowhook_hook_sym_name("libandroid.so", "AAssetManager_open", (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
+            DobbyHook(DobbySymbolResolver(nullptr, "kill"), (void *) my_kill, (void **) &orig_kill);
+            DobbyHook(DobbySymbolResolver(nullptr, "dlopen"), (void *) my_dlopen, (void **) &orig_dlopen);
+            DobbyHook(DobbySymbolResolver(nullptr, "dlsym"), (void *) my_dlsym, (void **) &orig_dlsym);
+            DobbyHook(DobbySymbolResolver(nullptr, "android_dlopen_ext"), (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
+            DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetManager_open"), (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
             // hook_system_property_read_callback();
             // int ret;
             // pthread_t ntid;

@@ -8,8 +8,8 @@ project(zygiskhook)
 # link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 # ./Dobby Prebuilt
-include_directories(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/include)
-link_libraries(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/${CMAKE_ANDROID_ARCH_ABI}.a)
+# include_directories(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/include)
+# link_libraries(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 set(ANDROID_STL "c++_shared") # CXX STL mode for lib
 set(CMAKE_CXX_STANDARD 23)
@@ -24,8 +24,12 @@ set(CMAKE_C_STANDARD 23)
 # add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
 # link_libraries(dobby_static)
 
+# shadowhook
+find_package(shadowhook REQUIRED CONFIG)
+link_libraries(shadowhook::shadowhook)
+
 # Main source
 # SET_OPTION(Plugin.Android.BionicLinkerUtil ON)
 add_library(${CMAKE_PROJECT_NAME} SHARED ${CMAKE_SOURCE_DIR}/main.cpp)
 target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE c_std_23 cxx_std_23)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE log )
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE log -lstdc++)
