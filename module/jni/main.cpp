@@ -173,7 +173,7 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
             libso_handle = handle;
             LOGE("libso handle %lx", (long)libso_handle);
 
-            void *exportedFunc = dlsym(TARGET_LIB, "JNI_OnLoad");
+            void *exportedFunc = dlsym(handle, "JNI_OnLoad");
             if (exportedFunc != nullptr) {
                 LOGE("libso exported func addr %lx", exportedFunc);
             }
