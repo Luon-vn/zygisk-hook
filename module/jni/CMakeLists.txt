@@ -7,7 +7,7 @@ project(zygiskhook)
 # link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 set(ANDROID_STL "c++_shared") # CXX STL mode for lib
-set(CMAKE_CXX_STANDARD 20)	
+set(CMAKE_CXX_STANDARD 23)	
 
 # libcxx from gradle/libs.versions.toml
 #find_package(cxx REQUIRED CONFIG)
