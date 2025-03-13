@@ -283,7 +283,7 @@ public:
             DobbyHook(DobbySymbolResolver(nullptr, "dlopen"), (void *) my_dlopen, (void **) &orig_dlopen);
             DobbyHook(DobbySymbolResolver(nullptr, "dlsym"), (void *) my_dlsym, (void **) &orig_dlsym);
             DobbyHook(DobbySymbolResolver(nullptr, "android_dlopen_ext"), (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
-            DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetManager_open"), (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
+            // DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetManager_open"), (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
             // hook_system_property_read_callback();
             // int ret;
             // pthread_t ntid;
