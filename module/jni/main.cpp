@@ -113,6 +113,23 @@ void hook_each(unsigned long rel_addr, void* hook, void** backup_){
 }
 
 // ==== Hook ====
+void *(*orig_open_2)(const char *file, int oflag);
+void *my_open_2(const char *file, int oflag) {
+    LOGE("open_2: %s %d", file, oflag);
+    return orig_open_2(file, oflag);
+}
+
+void *(*orig_system_property_find)(const char *name);
+void *my_system_property_find(const char *name) {
+    LOGE("system_property_find: %s %s", name);
+    return orig_system_property_find(name);
+}
+
+void *(*orig_system_property_get)(const char *name, char *value);
+void *my_system_property_get(const char *name, char *value) {
+    LOGE("system_property_get: %s %s", name, value);
+    return orig_system_property_get(name, value);
+}
 
 void *(*orig_kill)(pid_t pid, int sig);
 void *my_kill(pid_t pid, int sig) {
@@ -120,16 +137,16 @@ void *my_kill(pid_t pid, int sig) {
     return orig_kill(pid, sig);
 }
 
-void *(*orig__dlopen)(const char *filename, int flags);
+void *(*orig_dlopen)(const char *filename, int flags);
 void *my_dlopen(const char *filename, int flags) {
     LOGE("dlopen: %s flags: %08x", filename, flags);
-    return orig__dlopen(filename, flags);
+    return orig_dlopen(filename, flags);
 }
 
-void *(*orig__dlsym)(void *handle, const char *name);
+void *(*orig_dlsym)(void *handle, const char *name);
 void *my_dlsym(void *handle, const char *name) {
     LOGE("dlsym: %s", name);
-    return orig__dlsym(handle, name);
+    return orig_dlsym(handle, name);
 }
 
 static void* libso_handle = nullptr;
@@ -143,11 +160,11 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
         if(strstr(__filename, "libdexprotector.so")){
             libso_handle = handle;
             LOGE("got libdexprotector handle at %lx", (long)libso_handle);
+            sleep(5);
         }
     }
     // */
 
-    sleep(5);
 
     return handle;
 }
@@ -211,8 +228,11 @@ public:
         if (do_hook) {
             LOGE("module: start hooking");
             //hook dlopen
-            // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig__dlopen);
-            // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig__dlsym);
+            // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
+            // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
+            api->pltHookRegister(".*", "__system_property_get", (void *) my_system_property_get, (void **) &orig_system_property_get);
+            api->pltHookRegister(".*", "__system_property_find", (void *) my_system_property_find, (void **) &orig_system_property_find);
+            api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
             //hook android_dlopen_ext
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             api->pltHookCommit();
