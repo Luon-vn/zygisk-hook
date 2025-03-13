@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.22.1)
 project(zygiskhook)
 
 # ./libcxx prebuilt
-# include_directories(${CMAKE_SOURCE_DIR}/libcxx/include)
-# link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
+include_directories(${CMAKE_SOURCE_DIR}/libcxx/include)
+link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 # libcxx from gradle/libs.versions.toml
 #find_package(cxx REQUIRED CONFIG)
