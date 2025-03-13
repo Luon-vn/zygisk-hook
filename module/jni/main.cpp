@@ -199,7 +199,7 @@ public:
     }
 
     void postAppSpecialize(const AppSpecializeArgs *args) override {
-        LOGE("start postAppSpecialize");
+        // LOGE("start postAppSpecialize");
         if (do_hook) {
             LOGE("module: start hooking");
             //hook dlopen
@@ -209,14 +209,14 @@ public:
             // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             // api->pltHookCommit();
 
-            // int ret;
-            // pthread_t ntid;
-            // if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
-            //     LOGE("can't create thread: %s\n", strerror(ret));
-            // }
+            int ret;
+            pthread_t ntid;
+            if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
+                LOGE("can't create thread: %s\n", strerror(ret));
+            }
 
-            // LOGE("thread created: %d", ntid);
-
+            LOGE("thread created: %d", ntid);
+            api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
         }
     }
 
@@ -231,22 +231,22 @@ private:
     bool do_hook;
 
     void preSpecialize(const char *package_name, const char *app_data_dir) {
-        LOGE("start preSpecialize %s", package_name);
+        // LOGE("start preSpecialize %s", package_name);
         int fd = api->connectCompanion();
         send_string(fd, package_name);
         send_string(fd, app_data_dir);
 
-        LOGE("module: readstring");
+        // LOGE("module: readstring");
         std::string buf = read_string(fd);
 
-        LOGE("module: receive %s", buf.c_str());
+        // LOGE("module: receive %s", buf.c_str());
         if (buf == "0") {
             // Since we do not hook any functions, we should let Zygisk dlclose ourselves
             api->setOption(zygisk::Option::DLCLOSE_MODULE_LIBRARY);
             return;
         }
 
-        LOGE("module: do hook");
+        LOGE("module: do hook %s", package_name);
         do_hook = true;
     }
 
@@ -254,7 +254,7 @@ private:
 
 // 
 static void companion_handler(int fd) {
-    LOGE("start companion_handler");
+    // LOGE("start companion_handler");
     std::string package_name = read_string(fd);
     // LOGE("companion: package %s", package_name.c_str());
     std::string app_data_dir = read_string(fd);
