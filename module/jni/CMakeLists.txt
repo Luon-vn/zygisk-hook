@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.22)
+
 project(zygiskhook)
 # https://github.com/liyafe1997/PlayIntegrityFix
 
@@ -22,14 +24,14 @@ set(CMAKE_C_STANDARD 23)
 # add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
 # link_libraries(dobby_static)
 
+find_package(bytehook REQUIRED CONFIG)
+link_libraries(bytehook::bytehook)
+
 # shadowhook
 if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
     find_package(shadowhook REQUIRED CONFIG)
     target_link_libraries(${CMAKE_PROJECT_NAME} shadowhook::shadowhook)
 endif ()
-
-find_package(bytehook REQUIRED CONFIG)
-link_libraries(bytehook::bytehook)
 
 # Main source
 # SET_OPTION(Plugin.Android.BionicLinkerUtil ON)
