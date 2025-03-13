@@ -136,7 +136,7 @@ static void my_system_property_read_callback(prop_info *pi, T_Callback callback,
 static bool hook_system_property_read_callback() {
     void *ptr = DobbySymbolResolver(nullptr, "__system_property_read_callback");
     if (ptr && DobbyHook(ptr, (void *) my_system_property_read_callback,
-                         (void **) &o_system_property_read_callback) == 0) {
+                         (void **) &orig_system_property_read_callback) == 0) {
         LOGE("hook __system_property_read_callback successful at %p", ptr);
         return true;
     }
