@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.30.5)
-
 project(zygiskhook)
 # https://github.com/liyafe1997/PlayIntegrityFix
 
