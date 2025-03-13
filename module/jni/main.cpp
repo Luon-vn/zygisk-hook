@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <sys/system_properties.h>
+#include <android/asset_manager.h>
 #include <string>
 #include "zygisk.h"
 #include <android/log.h>
@@ -182,8 +183,8 @@ void *my_dlsym(void *handle, const char *name) {
     return orig_dlsym(handle, name);
 }
 
-void *(*orig_AAssetManager_open)(void *mgr, const char *filename, int mode);
-void *my_AAssetManager_open(void *mgr, const char *filename, int mode) {
+static AAsset*(*orig_AAssetManager_open)(AAssetManager* mgr, const char* filename, int mode);
+static AAsset*my_AAssetManager_open(AAssetManager* mgr, const char* filename, int mode) {
     LOGE("AAssetManager_open: %s %d", filename, mode);
     return orig_AAssetManager_open(mgr, filename, mode);
 }
@@ -277,7 +278,7 @@ public:
             // api->pltHookCommit();
 
             // dobby hook
-            DobbyHook(DobbySymbolResolver(nullptr, "AAssetManager_open"), (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
+            DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetManager_open"), (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
             DobbyHook(DobbySymbolResolver(nullptr, "kill"), (void *) my_kill, (void **) &orig_kill);
             DobbyHook(DobbySymbolResolver(nullptr, "dlopen"), (void *) my_dlopen, (void **) &orig_dlopen);
             DobbyHook(DobbySymbolResolver(nullptr, "dlsym"), (void *) my_dlsym, (void **) &orig_dlsym);
