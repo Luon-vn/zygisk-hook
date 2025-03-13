@@ -20,7 +20,7 @@ link_libraries(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 # Dobby source
 # git submodule add -- https://github.com/JingMatrix/Dobby.git ./module/jni/Dobby
-add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
+# add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
 
 # Main source
 SET_OPTION(Plugin.Android.BionicLinkerUtil ON)
