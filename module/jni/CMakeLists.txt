@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.30.5)
 
 project(zygiskhook)
 # https://github.com/liyafe1997/PlayIntegrityFix
@@ -25,8 +25,10 @@ set(CMAKE_C_STANDARD 23)
 # link_libraries(dobby_static)
 
 # shadowhook
-find_package(shadowhook REQUIRED CONFIG)
-link_libraries(shadowhook::shadowhook)
+if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
+    find_package(shadowhook REQUIRED CONFIG)
+    target_link_libraries(${CMAKE_PROJECT_NAME} shadowhook::shadowhook)
+endif ()
 
 find_package(bytehook REQUIRED CONFIG)
 link_libraries(bytehook::bytehook)
