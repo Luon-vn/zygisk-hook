@@ -190,6 +190,15 @@ AAsset* my_AAssetManager_open(AAssetManager* mgr, const char* filename, int mode
     return asset;
 }
 
+void *(*orig_AAssetDir_getNextFileName)(AAssetDir *assetDir) = nullptr;
+const char * my_AAssetDir_getNextFileName(
+    AAssetDir *assetDir
+) {
+    const char *ret = orig_AAssetDir_getNextFileName(assetDir);
+    LOGE("AAssetDir_getNextFileName: %s", ret);
+    return ret;
+}
+
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
 void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
     LOGE("android_dlopen_ext: %s flags: %08x", __filename, __flags);
@@ -284,6 +293,7 @@ public:
             DobbyHook(DobbySymbolResolver(nullptr, "dlsym"), (void *) my_dlsym, (void **) &orig_dlsym);
             DobbyHook(DobbySymbolResolver(nullptr, "android_dlopen_ext"), (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             // DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetManager_open"), (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
+            DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetDir_getNextFileName"), (void *) my_AAssetDir_getNextFileName, (void **) &orig_AAssetDir_getNextFileName);
             // hook_system_property_read_callback();
             // int ret;
             // pthread_t ntid;
