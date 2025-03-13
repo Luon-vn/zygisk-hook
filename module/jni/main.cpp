@@ -116,7 +116,7 @@ void hook_each(unsigned long rel_addr, void* hook, void** backup_){
 void *(*orig_lib_func)(void *a1, void *a2, int a3);
 void *my_lib_func(void *a1, void *a2, int a3) {
     void* ret = orig_lib_func(a1, a2, a3);
-    LOGE("lib_func: %s", ret);
+    LOGE("lib_func: %s", (char *)ret);
     return ret;
 }
 
@@ -150,6 +150,7 @@ void *my_dlsym(void *handle, const char *name) {
     return orig_dlsym(handle, name);
 }
 
+static unsigned long libso_base_addr = 0;
 static void* libso_handle = nullptr;
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
 void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info) {
@@ -163,12 +164,12 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
             LOGE("got libdexprotector handle at %lx", (long)libso_handle);
 
             while (true) {
-                base_addr = get_module_base("libdexprotector.so");
-                if (base_addr != 0 && libso_handle != nullptr) {
+                libso_base_addr = get_module_base("libdexprotector.so");
+                if (libso_base_addr != 0 && libso_handle != nullptr) {
                     break;
                 }
             }
-            LOGE("detect libdexprotector.so %lx", base_addr);
+            LOGE("detect libdexprotector.so %lx", libso_base_addr);
         }
     }
     // */
@@ -178,18 +179,17 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
 }
 
 // /*
-static unsigned long base_addr = 0;
 void *hack_thread(void *arg) {
     LOGE("hack thread: %d", gettid());
     srand(time(nullptr));
 
     while (true) {
-        base_addr = get_module_base("libdexprotector.so");
-        if (base_addr != 0 && libso_handle != nullptr) {
+        libso_base_addr = get_module_base("libdexprotector.so");
+        if (libso_base_addr != 0 && libso_handle != nullptr) {
             break;
         }
     }
-    LOGE("detect libdexprotector.so %lx, start sleep", base_addr);
+    LOGE("detect libdexprotector.so %lx, start sleep", libso_base_addr);
 
     while (true) {
         sleep(2);
