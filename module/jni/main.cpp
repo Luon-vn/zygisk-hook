@@ -183,10 +183,11 @@ void *my_dlsym(void *handle, const char *name) {
     return orig_dlsym(handle, name);
 }
 
-static AAsset* (*orig_AAssetManager_open)(AAssetManager* mgr, const char* filename, int mode);
-static AAsset* my_AAssetManager_open(AAssetManager* mgr, const char* filename, int mode) {
+AAsset* (*orig_AAssetManager_open)(AAssetManager* mgr, const char* filename, int mode) = nullptr;
+AAsset* my_AAssetManager_open(AAssetManager* mgr, const char* filename, int mode) {
     // LOGE("AAssetManager_open: %s %d", filename, mode);
-    return orig_AAssetManager_open(mgr, filename, mode);
+    AAsset* asset = orig_AAssetManager_open(mgr, filename, mode);
+    return asset;
 }
 
 void *(*orig_android_dlopen_ext)(const char *_Nullable __filename, int __flags, const android_dlextinfo *_Nullable __info);
