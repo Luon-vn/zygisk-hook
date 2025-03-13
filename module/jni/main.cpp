@@ -199,7 +199,7 @@ public:
     }
 
     void postAppSpecialize(const AppSpecializeArgs *args) override {
-        LOGE("module: postAppSpecialize");
+        LOGE("start postAppSpecialize");
         if (do_hook) {
             LOGE("module: start hooking");
             //hook dlopen
@@ -221,6 +221,7 @@ public:
     }
 
     void preServerSpecialize(zygisk::ServerSpecializeArgs *args) override {
+        LOGE("start preServerSpecialize");
         api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
     }
 
@@ -230,6 +231,7 @@ private:
     bool do_hook;
 
     void preSpecialize(const char *package_name, const char *app_data_dir) {
+        LOGE("start preSpecialize %s", package_name);
         int fd = api->connectCompanion();
         send_string(fd, package_name);
         send_string(fd, app_data_dir);
@@ -252,6 +254,7 @@ private:
 
 // 
 static void companion_handler(int fd) {
+    LOGE("start companion_handler");
     std::string package_name = read_string(fd);
     // LOGE("companion: package %s", package_name.c_str());
     std::string app_data_dir = read_string(fd);
