@@ -222,9 +222,9 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
             }
             LOGE("libso base addr %lx", libso_base_addr);
 
-            void* startFunc = DobbySymbolResolver(TARGET_LIB, "start");
+            uintptr_t startFunc = (uintptr_t)DobbySymbolResolver(TARGET_LIB, "start");
 
-            LOGE("libso start addr %lx", (unsigned long)startFunc);
+            LOGE("libso start addr %lx", startFunc);
 
             hook_each(libso_base_addr+0x3f0b4, (void *) my_lib_func, (void **) orig_lib_func);
 
@@ -296,7 +296,7 @@ public:
             LOGE("module: start hooking");
             //hook dlopen
             // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
-            api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
+            // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
             //hook android_dlopen_ext
             api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
 
