@@ -1,6 +1,5 @@
 [versions]
 cxxver = "27.0.12077973"
-shadowhookver = "1.1.1"
 bytehookver = "1.1.1"
 
 [libraries]

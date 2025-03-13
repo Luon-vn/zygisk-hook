@@ -4,14 +4,14 @@ project(zygiskhook)
 # https://github.com/liyafe1997/PlayIntegrityFix
 
 # ./libcxx prebuilt
-# include_directories(${CMAKE_SOURCE_DIR}/libcxx/include)
-# link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
+include_directories(${CMAKE_SOURCE_DIR}/libcxx/include)
+link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
-# ./Dobby Prebuilt
+# ./DobbyHook Prebuilt
 # include_directories(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/include)
 # link_libraries(${CMAKE_SOURCE_DIR}/DobbyPrebuilt/${CMAKE_ANDROID_ARCH_ABI}.a)
 
-set(ANDROID_STL "c++_shared") # CXX STL mode for lib
+# set(ANDROID_STL "c++_shared") # CXX STL mode for lib
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_C_STANDARD 23)
 
@@ -19,11 +19,12 @@ set(CMAKE_C_STANDARD 23)
 #find_package(cxx REQUIRED CONFIG)
 #link_libraries(cxx::cxx)
 
-# Dobby source
+# DobbyHook source
 # git submodule add -- https://github.com/JingMatrix/Dobby.git ./module/jni/Dobby
 # add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
 # link_libraries(dobby_static)
 
+# bytehook
 find_package(bytehook REQUIRED CONFIG)
 link_libraries(bytehook::bytehook)
 

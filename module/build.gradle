@@ -47,8 +47,8 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
-                // arguments "-DANDROID_STL=none" // static libcxx build
-                arguments "-DANDROID_STL=c++_shared" // shared libc++ build
+                arguments "-DANDROID_STL=none" // static libcxx build
+                // arguments "-DANDROID_STL=c++_shared" // shared libc++ build
 
                 cFlags "-std=c23"
                 cFlags "-fvisibility=hidden"
@@ -87,6 +87,8 @@ dependencies {
     // gradle/libs.versions.toml
     // implementation libs.cxx
     implementation libs.bytehook
-    implementation 'com.bytedance.android:shadowhook:1.1.1'
+    // or 
     // implementation 'com.bytedance:bytehook:1.1.1'
+
+    implementation 'com.bytedance.android:shadowhook:1.1.1'
 }
