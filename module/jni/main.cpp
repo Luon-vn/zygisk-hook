@@ -259,10 +259,10 @@ public:
         if (do_hook) {
             LOGE("module: start hooking");
             //hook dlopen
-            // api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
+            api->pltHookRegister(".*", "dlopen", (void *) my_dlopen, (void **) &orig_dlopen);
             // api->pltHookRegister(".*", "dlsym", (void *) my_dlsym, (void **) &orig_dlsym);
             //hook android_dlopen_ext
-            api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
+            // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
 
             // api->pltHookRegister(".*", "__open_2", (void *) my_open_2, (void **) &orig_open_2);
             api->pltHookCommit();
