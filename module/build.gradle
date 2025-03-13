@@ -8,6 +8,12 @@ android {
         prefab true
     }
 
+    packagingOptions {
+        exclude '**/libbytehook.so'
+        exclude '**/libshadowhook.so'
+        exclude '**/libshadowhook_nothing.so'
+    }
+
     packaging {
         jniLibs {
             excludes += "**/libdobby.so"
@@ -34,18 +40,31 @@ android {
         minSdkVersion 27
         targetSdkVersion 35
 
-        // CMake
+        // /* CMake
         ndk {
-            abiFilters 'armeabi-v7a' /* , 'arm64-v8a', 'x86', 'x86_64' */
+            abiFilters 'armeabi-v7a'
+            abiFilters 'arm64-v8a'
+            // abiFilters 'x86'
+            // abiFilters 'x86_64'
         }
-        // externalNativeBuild {
-        //     cmake {
-        //         arguments "-DCMAKE_BUILD_TYPE=MinSizeRel", "-DANDROID_STL=none" /* static libcxx build */ /* "-DANDROID_STL=c++_shared" /* shared libc++ build */
-        //         cFlags "-std=c23", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
-        //         cppFlags "-std=c++23", "-fno-exceptions", "-fno-rtti", "-fvisibility=hidden", "-fvisibility-inlines-hidden"
-        //     }
-        // }
-        // !CMake
+        externalNativeBuild {
+            cmake {
+                arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
+                // arguments "-DANDROID_STL=none" // static libcxx build
+                arguments "-DANDROID_STL=c++_shared" // shared libc++ build
+
+                cFlags "-std=c23"
+                cFlags "-fvisibility=hidden"
+                cFlags "-fvisibility-inlines-hidden"
+
+                cppFlags "-std=c++23"
+                cppFlags "-fno-exceptions"
+                cppFlags "-fno-rtti"
+                cppFlags "-fvisibility=hidden"
+                cppFlags "-fvisibility-inlines-hidden"
+            }
+        }
+        // */
 
     }
 
@@ -69,5 +88,7 @@ android {
 
 dependencies {
     // gradle/libs.versions.toml
-    implementation libs.cxx
+    // implementation libs.cxx
+    implementation libs.bytehook
+    implementation 'com.bytedance.android:shadowhook:1.1.1'
 }
