@@ -30,7 +30,7 @@ link_libraries(bytehook::bytehook)
 # shadowhook
 if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
     find_package(shadowhook REQUIRED CONFIG)
-    target_link_libraries(${CMAKE_PROJECT_NAME} shadowhook::shadowhook)
+    target_link_libraries(shadowhook::shadowhook)
 endif ()
 
 # Main source
