@@ -11,7 +11,7 @@ android {
     packaging {
         jniLibs {
             excludes += "**/libdobby.so"
-            excludes += "**/libc++_shared.so"
+            // excludes += "**/libc++_shared.so"
         }
         resources {
             excludes += "**"
