@@ -209,13 +209,14 @@ public:
             // api->pltHookRegister(".*", "android_dlopen_ext", (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             // api->pltHookCommit();
 
-            int ret;
-            pthread_t ntid;
-            if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
-                LOGE("can't create thread: %s\n", strerror(ret));
-            }
+            // int ret;
+            // pthread_t ntid;
+            // if ((ret = pthread_create(&ntid, nullptr, hack_thread, nullptr))) {
+            //     LOGE("can't create thread: %s\n", strerror(ret));
+            // }
 
-            LOGE("thread created: %d", ntid);
+            sleep(2);
+
             api->setOption(zygisk::DLCLOSE_MODULE_LIBRARY);
         }
     }
