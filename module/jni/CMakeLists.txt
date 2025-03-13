@@ -27,8 +27,8 @@ set(CMAKE_C_STANDARD 23)
 
 # DobbyHook source
 # git submodule add -- https://github.com/JingMatrix/Dobby.git ./module/jni/Dobby
-# add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
-# target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE dobby_static)
+add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE dobby_static)
 
 # bytehook
 # find_package(bytehook REQUIRED CONFIG)
@@ -36,6 +36,6 @@ set(CMAKE_C_STANDARD 23)
 
 # shadowhook
 if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
-    find_package(shadowhook REQUIRED CONFIG)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE shadowhook::shadowhook)
+    # find_package(shadowhook REQUIRED CONFIG)
+    # target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE shadowhook::shadowhook)
 endif()
