@@ -173,12 +173,12 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
             libso_handle = handle;
             LOGE("libso handle %lx", (long)libso_handle);
 
-            void *exportedFunc = DobbySymbolResolver(TARGET_LIB, "JNI_OnLoad");
+            void *exportedFunc = dlsym(TARGET_LIB, "JNI_OnLoad");
             if (exportedFunc != nullptr) {
                 LOGE("libso exported func addr %lx", exportedFunc);
             }
 
-            if (NULL != shadowhook_hook_sym_name((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
+            if (NULL != shadowhook_hook_sym_addr((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
                 LOGE("libso hooked func addr %lx", (unsigned long)exportedFunc+93208);
             }
 
