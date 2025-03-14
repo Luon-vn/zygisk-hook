@@ -51,15 +51,15 @@ android {
                 arguments "-DANDROID_STL=none" // static libcxx build
                 // arguments "-DANDROID_STL=c++_shared" // shared libc++ build
 
-                cFlags "-std=c23"
-                cFlags "-fvisibility=hidden"
-                cFlags "-fvisibility-inlines-hidden"
+                // cFlags "-std=c23"
+                // cFlags "-fvisibility=hidden"
+                // cFlags "-fvisibility-inlines-hidden"
 
-                cppFlags "-std=c++23"
-                cppFlags "-fno-exceptions"
-                cppFlags "-fno-rtti"
-                cppFlags "-fvisibility=hidden"
-                cppFlags "-fvisibility-inlines-hidden"
+                // cppFlags "-std=c++23"
+                // cppFlags "-fno-exceptions"
+                // cppFlags "-fno-rtti"
+                // cppFlags "-fvisibility=hidden"
+                // cppFlags "-fvisibility-inlines-hidden"
             }
         }
         // */
