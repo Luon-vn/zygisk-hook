@@ -17,6 +17,10 @@ add_library(${TARGET} STATIC ${SRC})
 target_include_directories(${TARGET} PRIVATE . include arch/${ARCH} common third_party/xdl third_party/bsd third_party/lss)
 target_link_libraries(${TARGET} log)
 
+include_directories(${CMAKE_SOURCE_DIR}/../libcxx/include)
+link_libraries(${CMAKE_SOURCE_DIR}/../libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
+
+
 target_link_options(${TARGET} PRIVATE ${ARCH_LINK_FLAGS})
 if(USEASAN)
     target_compile_options(${TARGET} PRIVATE -fsanitize=address -fno-omit-frame-pointer)
