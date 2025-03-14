@@ -26,9 +26,8 @@ link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 
 # DobbyHook source
 # git submodule add -- https://github.com/JingMatrix/Dobby.git ./module/jni/Dobby
-# add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
-# target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE dobby_static)
-
+add_subdirectory(${CMAKE_SOURCE_DIR}/Dobby)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE dobby_static)
 
 # bytehook
 # find_package(bytehook REQUIRED CONFIG)
@@ -38,7 +37,4 @@ link_libraries(${CMAKE_SOURCE_DIR}/libcxx/${CMAKE_ANDROID_ARCH_ABI}.a)
 if((${ANDROID_ABI} STREQUAL "arm64-v8a") OR (${ANDROID_ABI} STREQUAL "armeabi-v7a"))
     # find_package(shadowhook REQUIRED CONFIG)
     # target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE shadowhook::shadowhook)
-    # shadowhook static
-    add_subdirectory(${CMAKE_SOURCE_DIR}/shadowhook)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE shadowhook)
 endif()
