@@ -56,6 +56,7 @@ android {
                 // cFlags '-fvisibility=hidden'
                 // cFlags '-fvisibility-inlines-hidden'
 
+                cppFlags '-Wno-reserved-id-macro'
                 // cppFlags '-std=c++23'
                 // cppFlags '-fno-exceptions'
                 // cppFlags '-fno-rtti'
