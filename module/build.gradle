@@ -16,11 +16,11 @@ android {
 
     packaging {
         jniLibs {
-            excludes += "**/libdobby.so"
-            excludes += "**/libc++_shared.so"
+            excludes += '**/libdobby.so'
+            excludes += '**/libc++_shared.so'
         }
         resources {
-            excludes += "**"
+            excludes += '**'
         }
     }
 
@@ -47,19 +47,20 @@ android {
         }
         externalNativeBuild {
             cmake {
-                arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
-                arguments "-DANDROID_STL=none" // static libcxx build
-                // arguments "-DANDROID_STL=c++_shared" // shared libc++ build
+                arguments '-DCMAKE_BUILD_TYPE=MinSizeRel'
+                arguments '-DANDROID_STL=none' // static libcxx build
+                // arguments '-DANDROID_STL=c++_shared' // shared libc++ build
 
-                // cFlags "-std=c23"
-                // cFlags "-fvisibility=hidden"
-                // cFlags "-fvisibility-inlines-hidden"
+                cFlags '-Wno-reserved-id-macro'
+                // cFlags '-std=c23'
+                // cFlags '-fvisibility=hidden'
+                // cFlags '-fvisibility-inlines-hidden'
 
-                // cppFlags "-std=c++23"
-                // cppFlags "-fno-exceptions"
-                // cppFlags "-fno-rtti"
-                // cppFlags "-fvisibility=hidden"
-                // cppFlags "-fvisibility-inlines-hidden"
+                // cppFlags '-std=c++23'
+                // cppFlags '-fno-exceptions'
+                // cppFlags '-fno-rtti'
+                // cppFlags '-fvisibility=hidden'
+                // cppFlags '-fvisibility-inlines-hidden'
             }
         }
         // */
@@ -69,7 +70,7 @@ android {
     /* Android.mk instead of CMake
     externalNativeBuild {
         ndkBuild {
-            path("jni/Android.mk")
+            path('jni/Android.mk')
         }
         
     }
@@ -78,7 +79,7 @@ android {
     ///* CMake
     externalNativeBuild {
         cmake {
-            path "jni/CMakeLists.txt"
+            path 'jni/CMakeLists.txt'
             version '3.31.6' // cmake.dir in local.properties
         }
     }
