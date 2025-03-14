@@ -38,7 +38,7 @@ android {
     // ndkVersion '28.1.8111888'
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 24
         targetSdkVersion 35
 
         // /* CMake
