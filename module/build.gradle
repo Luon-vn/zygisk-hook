@@ -79,7 +79,7 @@ android {
     externalNativeBuild {
         cmake {
             path "jni/CMakeLists.txt"
-            dir "./cmake-dir/"
+            version '3.30.5'
         }
     }
     // */
