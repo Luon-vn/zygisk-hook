@@ -25,6 +25,11 @@ jobs:
     - name: Grant execute permission for gradlew & Build with Gradle
       run: |
         chmod +x gradlew
+
+        # cmake
+        curl -OL https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz
+        tar xzf cmake*.tar.gz -C /tmp/cmake
+
         ./gradlew build
         find ./module/build -type f
         zip -r outputs.zip ./module/build/outputs
