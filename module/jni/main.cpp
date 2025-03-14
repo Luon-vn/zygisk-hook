@@ -23,7 +23,7 @@ using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 using zygisk::ServerSpecializeArgs;
 
-#define TARGET_LIB "libdexprotectorx.so"
+#define TARGET_LIB "libalice.so"
 #define LOG_TAG "ZygiskHook"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -213,11 +213,10 @@ void *my_android_dlopen_ext(const char *_Nullable __filename, int __flags, const
                 LOGE("libso exported func addr %lx", exportedFunc);
             }
 
-            if (0 == DobbyHook((void *)((unsigned long)exportedFunc+93208), (void *) my_lib_func, (void **) &orig_lib_func)) {
-                LOGE("libso hooked func addr %lx", (unsigned long)exportedFunc+93208);
+            if (0 == DobbyHook((void *)((unsigned long)exportedFunc+66388), (void *) my_lib_func, (void **) &orig_lib_func)) {
+                LOGE("libso hooked func addr %lx", (unsigned long)exportedFunc+66388);
             }
 
-            sleep(5);
         }
     }
     // */
@@ -291,7 +290,7 @@ public:
             DobbyHook(DobbySymbolResolver(nullptr, "dlsym"), (void *) my_dlsym, (void **) &orig_dlsym);
             DobbyHook(DobbySymbolResolver(nullptr, "android_dlopen_ext"), (void *) my_android_dlopen_ext, (void **) &orig_android_dlopen_ext);
             // DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetManager_open"), (void *) my_AAssetManager_open, (void **) &orig_AAssetManager_open);
-            DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetDir_getNextFileName"), (void *) my_AAssetDir_getNextFileName, (void **) &orig_AAssetDir_getNextFileName);
+            // DobbyHook(DobbySymbolResolver("libandroid.so", "AAssetDir_getNextFileName"), (void *) my_AAssetDir_getNextFileName, (void **) &orig_AAssetDir_getNextFileName);
             // hook_system_property_read_callback();
             // int ret;
             // pthread_t ntid;
