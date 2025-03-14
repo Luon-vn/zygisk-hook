@@ -30,7 +30,7 @@ jobs:
         curl -OL https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz
         mkdir ./cmake-dir/
         tar xzf cmake*.tar.gz -C ./cmake-dir/ --strip-components=1
-        ls ./cmake-dir/ -al
+        # ls ./cmake-dir/ -al
 
         ./gradlew build
         find ./module/build -type f
