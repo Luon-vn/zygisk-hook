@@ -28,6 +28,7 @@ jobs:
 
         # cmake
         curl -OL https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz
+        mkdir ./cmake-dir/
         tar xzf cmake*.tar.gz -C ./cmake-dir/
         ls ./cmake-dir/ -al
 
