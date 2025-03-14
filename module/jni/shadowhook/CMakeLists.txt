@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.30.5)
 project(shadowhook)
 
 if(${ANDROID_ABI} STREQUAL "arm64-v8a")
